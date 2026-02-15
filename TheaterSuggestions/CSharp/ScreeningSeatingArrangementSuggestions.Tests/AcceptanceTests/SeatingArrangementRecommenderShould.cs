@@ -94,5 +94,29 @@ namespace SeatsSuggestions.Tests.AcceptanceTests
             Check.That(suggestionsAreMade.SeatNames(PricingCategory.Third)).ContainsExactly("E1", "E2", "E3");
             Check.That(suggestionsAreMade.SeatNames(PricingCategory.Mixed)).ContainsExactly("A1", "A2", "A3");
         }
+
+        
+        [Test]
+        public void Should_offer_adjacent_seats_nearer_the_middle_of_a_row()
+        {
+            // Mogador Auditorium-9
+            //
+            //    1   2   3   4   5   6   7   8   9  10
+            // A: 2   2   1   1  (1) (1) (1) (1)  2   2
+            // B: 2   2   1   1   1   1   1   1   2   2
+            //
+            // Available FIRST category: A3, A4 (row A) and B3-B8 (row B)
+            // Middle of row: between seats 5 and 6
+            const string showId = "9";
+            const int partyRequested = 1;
+
+            var auditoriumSeatingArrangements =
+                new AuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
+            var seatingArrangementRecommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);
+            var suggestionsAreMade = seatingArrangementRecommender.MakeSuggestions(showId, partyRequested);
+
+            // Order matters: A4 before A3 (A4 is closer to middle), then B5 (middle of row B)
+            Check.That(suggestionsAreMade.SeatNames(PricingCategory.First)).ContainsExactly("A4", "A3", "B5");
+        }
     }
 }

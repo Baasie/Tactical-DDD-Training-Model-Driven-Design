@@ -250,3 +250,45 @@ Look at the completed refactoring and notice:
 - How removing `addSeat()` from SeatingOptionIsSuggested made it a proper Value Object — constructed once, never modified
 - How every object in the domain is now either a Service, Repository, Aggregate, or Value Object — the tactical DDD building blocks
 - How immutability propagates: Row no longer collaborates with SeatingOptionIsSuggested (it just creates it), reducing coupling
+
+---
+
+## Lab 3: Deep Modeling
+
+### Learning Goal
+
+Learn to prototype new domain behaviour in isolation before integrating it into the existing model. This is the "Deep Modeling" practice described by Eric Evans — by experimenting outside the current model, you avoid the bias of retrofitting new requirements into existing structures.
+
+### What Changed
+
+A new business requirement has been added: **Seats should be suggested starting from the middle of the row, working outward.** The best seats in a row are near the center, not at the edges.
+
+Two new failing tests have been added:
+
+1. **Acceptance test** — `should_offer_adjacent_seats_nearer_the_middle_of_a_row` uses the Mogador Auditorium (show ID "9") and expects FIRST category seats ordered by proximity to the middle: A4, A3, B5.
+
+2. **Row unit test** — `should_offer_seats_starting_from_middle_of_row` prototypes the middle-outward algorithm in a standalone helper method, deliberately outside the domain model.
+
+### Your Task
+
+1. Start with the **unit test**, not the acceptance test
+2. Implement the helper method `offerSeatsNearerTheMiddleOfTheRow()` — it's a standalone function that takes a Row and returns seats sorted by distance from the center
+3. Get the unit test green
+4. Then think about where this behaviour belongs in the domain model — does it go on Row? Does a new concept emerge? Does the existing `suggestSeatingOption()` method need to change?
+5. Integrate the algorithm and make the acceptance test pass
+
+### Why Prototype Outside the Model?
+
+The helper method is deliberately a standalone function, not a method on Row. This is intentional:
+
+- **Lowers retrofit bias** — if you start by modifying Row directly, you'll unconsciously try to fit the new behaviour into the existing structure
+- **Focuses on the algorithm** — you can experiment with sorting logic without worrying about how it integrates
+- **Reveals hidden concepts** — once the algorithm works, you may notice it introduces a concept (like "distance from middle") that deserves its own representation in the model
+- **Matches how domain experts think** — they likely describe this as "suggest seats near the center" not "modify the row's internal suggestion algorithm"
+
+### Using AI Assistants
+
+You may use AI to help implement the algorithm. However, consider:
+- Ask AI to help with the standalone prototype first
+- Discuss with AI where the behaviour should live in the domain model — what are the trade-offs?
+- Use AI to review whether your integration preserves the existing model's design qualities

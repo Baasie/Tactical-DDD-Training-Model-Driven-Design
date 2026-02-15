@@ -67,7 +67,7 @@ ReservedSeatsDto GetReservedSeats(string showId)
 
 ---
 
-## Domain Objects (Lab 2 End)
+## Domain Objects (Lab 3 Begin)
 
 | Object | Description |
 |--------|-------------|

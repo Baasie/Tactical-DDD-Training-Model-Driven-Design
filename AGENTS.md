@@ -66,11 +66,10 @@ TheaterSuggestions/
 - Letters (A, B, C) = row name
 - Numbers in header = seat number
 
-**Current State (Lab 2 End):**
-- All four acceptance tests pass, including MIXED category
-- Domain objects fully refactored to immutable Value Objects with DDD tactical patterns
-- Sealed interface `SeatingOption` replaces inheritance hierarchy
-- Unit tests verify immutability and value equality
+**Current State (Lab 3 Begin):**
+- New failing acceptance test: seats should be suggested starting from middle of row
+- New failing unit test: prototype of middle-outward algorithm in standalone helper method
+- Domain code unchanged from lab-2-end — all existing tests still pass
 
 **Domain Objects Implemented:**
 - `SeatingArrangementRecommender` - Service, orchestrates 3 suggestions per pricing category including MIXED
