@@ -26,7 +26,7 @@ them into suggestions grouped by pricing category.
 
 ## CRC Cards
 
-These CRC cards describe the domain model. They evolved during Lab 1 as the implementation progressed.
+These CRC cards follow Rebecca Wirfs-Brock's responsibility-driven design approach. Each card captures what an object **knows** (its knowledge responsibilities), what it **does** (its behavioural responsibilities), and who it **collaborates** with to fulfil those responsibilities. These cards represent the full domain model from the modelling session. 
 
 ### Seating Arrangement Recommender
 
@@ -43,6 +43,8 @@ Purpose: Orchestrates the suggestion workflow — makes sure seating place sugge
 **Collaborators:**
 - AuditoriumSeatingArrangements
 - AuditoriumSeatingArrangement
+- Pricing Category
+- Suggestion Is Made
 
 ### Auditorium Seating Arrangements
 
@@ -126,54 +128,6 @@ Purpose: Represents the possible states a seat can be in.
 
 **Collaborators:**
 - None
-
-### Seating Option Is Suggested
-
-Purpose: Accumulates seats during a suggestion attempt — tracks whether enough seats have been collected to satisfy the party size.
-
-**Knows:**
-- The party size requested
-- The pricing category
-- The collected seats so far
-
-**Does:**
-- Collect seats one by one during a row scan
-- Report whether collected seats match the requested party size
-
-**Collaborators:**
-- SeatingPlace
-- PricingCategory
-
-### Seating Option Is Not Available
-
-Purpose: Signals that a row could not produce a valid seating option — acts as a null object.
-
-**Knows:**
-- The party size requested and pricing category (inherited, empty seat list)
-
-**Does:**
-- Signal "no seats found" (matchExpectation always returns false)
-
-**Collaborators:**
-- PricingCategory
-
-### Suggestion Is Made
-
-Purpose: Wraps a successful seating option into a confirmed suggestion with displayable seat names.
-
-**Knows:**
-- The suggested seats
-- The pricing category
-- The party size requested
-
-**Does:**
-- Provide seat names as strings (e.g. ["A1", "A2"])
-- Report whether the suggestion matches the expectation
-
-**Collaborators:**
-- SeatingOptionIsSuggested
-- SeatingPlace
-- PricingCategory
 
 ### Suggestions Are Made
 

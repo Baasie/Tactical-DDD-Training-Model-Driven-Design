@@ -41,6 +41,20 @@ There is no "wrong" way to use AI in this lab. The goal is to discover what work
 
 ---
 
+## Lab 1: Green — First Acceptance Test Passes
+
+This branch represents the first "green" step of outside-in TDD. The first acceptance test passes with a minimal implementation. Tests 2 and 3 are still commented out.
+
+### What to Review
+
+Before moving to the next test, look at the current implementation and notice:
+- Which CRC card responsibilities are already implemented and which are missing
+- Where behaviour is concentrated (is it well-distributed across objects?)
+- What will need to change when the next test is uncommented
+- How the current design will resist or support the remaining requirements
+
+---
+
 ## After the Lab: Reflection
 
 Take a few minutes to reflect on your experience:

@@ -1,8 +1,27 @@
 package org.weaveit.seatingplacesuggestions
 
-class SeatingArrangementRecommender {
+class SeatingArrangementRecommender(
+    private val auditoriumSeatingArrangements: AuditoriumSeatingArrangements
+) {
+    fun makeSuggestions(showId: String, partyRequested: Int): SuggestionsAreMade {
+        val rows = auditoriumSeatingArrangements.findByShowId(showId)
+        val suggestionsAreMade = SuggestionsAreMade(showId, partyRequested)
 
-    fun makeSuggestions(showId: String, partyRequested: Int): Any {
-        TODO("Implement based on CRC card responsibilities")
+        for (row in rows.values) {
+            val seatsFound = mutableListOf<SeatingPlace>()
+
+            for (seat in row.seatingPlaces()) {
+                if (seat.isAvailable() && seat.matchCategory(PricingCategory.FIRST)) {
+                    seatsFound.add(seat)
+
+                    if (seatsFound.size == partyRequested) {
+                        suggestionsAreMade.addSeats(PricingCategory.FIRST, seatsFound.map { it.name() })
+                        return suggestionsAreMade
+                    }
+                }
+            }
+        }
+
+        return suggestionsAreMade
     }
 }

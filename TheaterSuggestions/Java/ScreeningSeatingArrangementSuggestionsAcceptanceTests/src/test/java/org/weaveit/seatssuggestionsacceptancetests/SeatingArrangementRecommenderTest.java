@@ -1,5 +1,8 @@
 package org.weaveit.seatssuggestionsacceptancetests;
 
+import org.weaveit.externaldependencies.auditoriumlayoutrepository.AuditoriumLayoutRepository;
+import org.weaveit.externaldependencies.reservationsprovider.ReservationsProvider;
+import org.weaveit.seatingplacesuggestions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -8,9 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SeatingArrangementRecommenderTest {
-    /*
-     *  Business Rule - Only Suggest available seats
-     */
 
     @Test
     void suggest_one_seatingPlace_when_Auditorium_contains_one_available_seatingPlace() throws IOException {
@@ -21,12 +21,12 @@ class SeatingArrangementRecommenderTest {
         final String showId = "1";
         final int partyRequested = 1;
 
-//        var auditoriumSeatingArrangements =
-//                new AuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
-//        var seatingArrangementRecommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);
-//        var suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested);
-//
-//        assertThat(suggestionsAreMade.seatNames(PricingCategory.FIRST)).containsExactly("A3");
+        var auditoriumSeatingArrangements =
+                new AuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
+        var seatingArrangementRecommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);
+        var suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested);
+
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.FIRST)).containsExactly("A3");
     }
 
     @Test
@@ -66,5 +66,3 @@ class SeatingArrangementRecommenderTest {
 //        assertThat(suggestionsAreMade.seatNames(PricingCategory.SECOND)).containsExactly("A1", "A2", "A9", "A10", "B1", "B2");
     }
 }
-
-

@@ -2,7 +2,7 @@ package org.weaveit.seatssuggestionsacceptancetests
 
 import org.weaveit.externaldependencies.auditoriumlayoutrepository.AuditoriumLayoutRepository
 import org.weaveit.externaldependencies.reservationsprovider.ReservationsProvider
-//import org.weaveit.seatingplacesuggestions.*
+import org.weaveit.seatingplacesuggestions.*
 import org.junit.jupiter.api.Test
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.assertEquals
@@ -22,14 +22,14 @@ class SeatingArrangementRecommenderTest {
         val showId = "1"
         val partyRequested = 1
 
-//        val auditoriumSeatingArrangements = AuditoriumSeatingArrangements(
-//            AuditoriumLayoutRepository(),
-//            ReservationsProvider()
-//        )
-//        val seatingArrangementRecommender = SeatingArrangementRecommender(auditoriumSeatingArrangements)
-//        val suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested)
-//
-//        assertThat(suggestionsAreMade.seatNames(PricingCategory.FIRST)).containsExactly("A3")
+        val auditoriumSeatingArrangements = AuditoriumSeatingArrangements(
+            AuditoriumLayoutRepository(),
+            ReservationsProvider()
+        )
+        val seatingArrangementRecommender = SeatingArrangementRecommender(auditoriumSeatingArrangements)
+        val suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested)
+
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.FIRST)).containsExactly("A3")
     }
 
     @Test

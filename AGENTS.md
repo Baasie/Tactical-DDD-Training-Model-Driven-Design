@@ -65,7 +65,15 @@ TheaterSuggestions/
 - Letters (A, B, C) = row name
 - Numbers in header = seat number
 
-**Starting Point (Lab 1 Begin):**
-- `SeatingArrangementRecommender` - skeleton class to implement
-- Tests are commented out - uncomment them one by one
-- Use your CRC cards to guide implementation
+**Current State (First Test Green):**
+- First acceptance test passes, tests 2 and 3 are commented out
+- Minimal implementation — only enough code to pass the first test
+
+**Domain Objects Implemented:**
+- `SeatingArrangementRecommender` - makes suggestions (currently hardcoded to FIRST category)
+- `AuditoriumSeatingArrangements` - anti-corruption layer, returns rows as a map
+- `Row` - data holder for seating places
+- `SeatingPlace` - single seat with availability as boolean
+- `SuggestionsAreMade` - collects seat names by pricing category
+- `PricingCategory` - enum: FIRST, SECOND, THIRD
+

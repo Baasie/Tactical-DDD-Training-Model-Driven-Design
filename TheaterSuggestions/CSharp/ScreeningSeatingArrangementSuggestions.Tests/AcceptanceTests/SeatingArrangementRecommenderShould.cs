@@ -1,7 +1,8 @@
-﻿using ExternalDependencies.AuditoriumLayoutRepository;
+using ExternalDependencies.AuditoriumLayoutRepository;
 using ExternalDependencies.ReservationsProvider;
 using NFluent;
 using NUnit.Framework;
+using SeatsSuggestions;
 
 namespace SeatsSuggestions.Tests.AcceptanceTests
 {
@@ -19,14 +20,14 @@ namespace SeatsSuggestions.Tests.AcceptanceTests
             const string showId = "1";
             const int partyRequested = 1;
 
-            // var auditoriumSeatingArrangements =
-            //     new AuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
-            // var seatingArrangementRecommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);
-            // var suggestionsAreMade = seatingArrangementRecommender.MakeSuggestions(showId, partyRequested);
+            var auditoriumSeatingArrangements =
+                new AuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
+            var seatingArrangementRecommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);
+            var suggestionsAreMade = seatingArrangementRecommender.MakeSuggestions(showId, partyRequested);
 
-            // Check.That(suggestionsAreMade.SeatNames(PricingCategory.First)).ContainsExactly("A3");
+            Check.That(suggestionsAreMade.SeatNames(PricingCategory.First)).ContainsExactly("A3");
         }
-        
+
         [Test]
         public void Return_SuggestionNotAvailable_when_Auditorium_has_all_its_seatingPlaces_reserved()
         {
@@ -48,7 +49,7 @@ namespace SeatsSuggestions.Tests.AcceptanceTests
 
             // Check.That(suggestionsAreMade).IsInstanceOf<SuggestionsAreNotAvailable>();
         }
-        
+
         [Test]
         public void Suggest_two_seatingPlaces_when_Auditorium_contains_all_available_seatingPlaces()
         {
@@ -58,7 +59,7 @@ namespace SeatsSuggestions.Tests.AcceptanceTests
             //  B: 2   2   1   1   1   1   1   1   2   2
             const string showId = "17";
             const int partyRequested = 2;
-            
+
             // var auditoriumSeatingArrangements =
             //     new AuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
             // var seatingArrangementRecommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);

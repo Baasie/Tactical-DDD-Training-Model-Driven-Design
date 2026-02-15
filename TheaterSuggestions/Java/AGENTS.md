@@ -66,11 +66,16 @@ ReservedSeatsDto getReservedSeats(String showId)
 
 ---
 
-## Starting Point
+## Domain Objects (First Test Green)
 
-- `SeatingArrangementRecommender` skeleton exists
-- Tests are commented - uncomment one at a time
-- Use your CRC cards to guide implementation
+| Object | Description |
+|--------|-------------|
+| `SeatingArrangementRecommender` | Makes suggestions (currently hardcoded to FIRST category) |
+| `AuditoriumSeatingArrangements` | Anti-corruption layer, returns rows as a map |
+| `Row` | Data holder for seating places |
+| `SeatingPlace` | Single seat with availability as boolean |
+| `SuggestionsAreMade` | Collects seat names by pricing category |
+| `PricingCategory` | Enum: FIRST, SECOND, THIRD |
 
 ---
 
