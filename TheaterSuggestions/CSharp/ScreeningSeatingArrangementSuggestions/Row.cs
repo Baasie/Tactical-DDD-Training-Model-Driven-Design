@@ -13,18 +13,22 @@ public record Row
 
     public SeatingOption SuggestSeatingOption(int partyRequested, PricingCategory pricingCategory)
     {
-        var foundSeats = new List<SeatingPlace>();
+        var selectedSeats = new List<SeatingPlace>();
+        var rowSize = SeatingPlaces.Count;
 
-        foreach (var seat in SeatingPlaces)
+        var availableSeatsCloserToCenter = SeatingPlaces
+            .Where(seat => seat.IsAvailable())
+            .Where(seat => seat.MatchCategory(pricingCategory))
+            .OrderBy(seat => DistanceFromRowCenter.Of(seat.Number, rowSize))
+            .ToList();
+
+        foreach (var seat in availableSeatsCloserToCenter)
         {
-            if (seat.IsAvailable() && seat.MatchCategory(pricingCategory))
-            {
-                foundSeats.Add(seat);
+            selectedSeats.Add(seat);
 
-                if (foundSeats.Count == partyRequested)
-                {
-                    return new SeatingOptionIsSuggested(partyRequested, pricingCategory, foundSeats);
-                }
+            if (selectedSeats.Count == partyRequested)
+            {
+                return new SeatingOptionIsSuggested(partyRequested, pricingCategory, selectedSeats);
             }
         }
 

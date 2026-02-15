@@ -66,7 +66,7 @@ namespace SeatsSuggestions.Tests.AcceptanceTests
             var suggestionsAreMade = seatingArrangementRecommender.MakeSuggestions(showId, partyRequested);
 
             var seatNames = suggestionsAreMade.SeatNames(PricingCategory.Second);
-            Check.That(seatNames).ContainsExactly("A1", "A2", "A9", "A10", "B1", "B2");
+            Check.That(seatNames).ContainsExactly("A2", "A9", "A1", "A10", "B2", "B9");
         }
 
         [Test]
@@ -89,10 +89,11 @@ namespace SeatsSuggestions.Tests.AcceptanceTests
             var seatingArrangementRecommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);
             var suggestionsAreMade = seatingArrangementRecommender.MakeSuggestions(showId, partyRequested);
 
-            Check.That(suggestionsAreMade.SeatNames(PricingCategory.First)).ContainsExactly("A3", "A4", "A5");
-            Check.That(suggestionsAreMade.SeatNames(PricingCategory.Second)).ContainsExactly("A1", "A2", "A9");
-            Check.That(suggestionsAreMade.SeatNames(PricingCategory.Third)).ContainsExactly("E1", "E2", "E3");
-            Check.That(suggestionsAreMade.SeatNames(PricingCategory.Mixed)).ContainsExactly("A1", "A2", "A3");
+            // Middle-out ordering: seats closest to middle (5.5) come first
+            Check.That(suggestionsAreMade.SeatNames(PricingCategory.First)).ContainsExactly("A5", "A6", "A4");
+            Check.That(suggestionsAreMade.SeatNames(PricingCategory.Second)).ContainsExactly("A2", "A9", "A1");
+            Check.That(suggestionsAreMade.SeatNames(PricingCategory.Third)).ContainsExactly("E5", "E6", "E4");
+            Check.That(suggestionsAreMade.SeatNames(PricingCategory.Mixed)).ContainsExactly("A5", "A6", "A4");
         }
 
         

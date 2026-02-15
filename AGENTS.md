@@ -67,10 +67,10 @@ TheaterSuggestions/
 - Letters (A, B, C) = row name
 - Numbers in header = seat number
 
-**Current State (Lab 3 Green Test):**
-- Unit test prototype passes: middle-outward algorithm implemented in standalone helper method
-- Acceptance test still fails: domain model not yet updated to use the new algorithm
-- Domain code unchanged from lab-2-end — all existing tests still pass
+**Current State (Lab 3 End):**
+- All five acceptance tests pass, including middle-outward seat ordering
+- New Value Object `DistanceFromRowCenter` makes the "distance from center" concept explicit
+- Row sorts available seats by distance from center instead of left-to-right
 
 **Domain Objects Implemented:**
 - `SeatingArrangementRecommender` - Service, orchestrates 3 suggestions per pricing category including MIXED
@@ -85,5 +85,6 @@ TheaterSuggestions/
 - `SuggestionIsMade` - Value Object, immutable snapshot of a confirmed suggestion
 - `SuggestionsAreMade` - Value Object, collects suggestions by pricing category
 - `SuggestionsAreNotAvailable` - Value Object (Null Object), signals no suggestions could be made
+- `DistanceFromRowCenter` - Value Object, calculates and compares seat distance from row center
 - `PricingCategory` - Value Object, enum: FIRST, SECOND, THIRD, MIXED
 

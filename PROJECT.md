@@ -87,12 +87,13 @@ Purpose: Represents a single row of seats — finds groups of available seats th
 - Its ordered collection of seating places
 
 **Does:**
-- Find available seats matching a party size and pricing category
+- Find available seats matching a party size and pricing category, ordered from center outward
 - Return a SeatingOption (either SeatingOptionIsSuggested or SeatingOptionIsNotAvailable)
 - Allocate seats (return a new instance with updated seating places)
 
 **Collaborators:**
 - SeatingPlace
+- DistanceFromRowCenter
 
 ### Seating Option
 
@@ -227,6 +228,20 @@ Purpose: Represents the pricing tiers available in an auditorium, including a wi
 **Collaborators:**
 - None
 
+### Distance From Row Center
+
+Purpose: Represents how far a seat is from the center of its row — seats closer to the center provide a better viewing experience.
+
+**Knows:**
+- Its distance value
+
+**Does:**
+- Calculate distance from row center for a given seat number and row size
+- Compare itself to another distance (for sorting)
+
+**Collaborators:**
+- None
+
 ## DDD Tactical Patterns
 
 How the domain objects map to DDD tactical patterns:
@@ -236,5 +251,5 @@ How the domain objects map to DDD tactical patterns:
 | **Service** | SeatingArrangementRecommender |
 | **Repository and Factory** | AuditoriumSeatingArrangements |
 | **Aggregate** | AuditoriumSeatingArrangement |
-| **Value Object** | SeatingPlace, Row, SeatingOption, SeatingOptionIsSuggested, SuggestionIsMade, SuggestionsAreMade, PricingCategory, SeatingPlaceAvailability |
+| **Value Object** | SeatingPlace, Row, SeatingOption, SeatingOptionIsSuggested, SuggestionIsMade, SuggestionsAreMade, PricingCategory, SeatingPlaceAvailability, DistanceFromRowCenter |
 | **Value Object (Null Object)** | SeatingOptionIsNotAvailable, SuggestionsAreNotAvailable |

@@ -12,15 +12,19 @@ data class Row private constructor(
     }
 
     fun suggestSeatingOption(partyRequested: Int, pricingCategory: PricingCategory): SeatingOption {
-        val foundSeats = mutableListOf<SeatingPlace>()
+        val selectedSeats = mutableListOf<SeatingPlace>()
+        val rowSize = seatingPlaces.size
 
-        for (seat in seatingPlaces) {
-            if (seat.isAvailable() && seat.matchCategory(pricingCategory)) {
-                foundSeats.add(seat)
+        val availableSeatsCloserToCenter = seatingPlaces
+            .filter { it.isAvailable() }
+            .filter { it.matchCategory(pricingCategory) }
+            .sortedBy { DistanceFromRowCenter.of(it.number, rowSize) }
 
-                if (foundSeats.size == partyRequested) {
-                    return SeatingOptionIsSuggested(partyRequested, pricingCategory, foundSeats)
-                }
+        for (seat in availableSeatsCloserToCenter) {
+            selectedSeats.add(seat)
+
+            if (selectedSeats.size == partyRequested) {
+                return SeatingOptionIsSuggested(partyRequested, pricingCategory, selectedSeats.toList())
             }
         }
 

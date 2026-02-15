@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using NFluent;
 using NUnit.Framework;
 using SeatsSuggestions;
@@ -11,11 +9,8 @@ namespace SeatsSuggestions.Tests.UnitTests;
 public class RowTest
 {
     /// <summary>
-    /// Deep Modeling: Before changing the domain model, prototype the new behavior
-    /// in isolation to understand the algorithm and validate the approach.
-    ///
-    /// New Rule: Seats should be suggested starting from the middle of the row,
-    /// working outward. For a row with 10 seats, the middle is between seats 5 and 6.
+    /// Seats should be suggested starting from the middle of the row, working outward.
+    /// For a row with 10 seats, the middle is between seats 5 and 6.
     /// Seats closer to the middle are preferred.
     ///
     /// Row layout for this test:
@@ -24,13 +19,12 @@ public class RowTest
     ///
     /// Available FIRST category seats: A3, A5, A6, A7
     /// Middle of row: between 5 and 6
-    /// Expected order from middle outward: A5, A6, A7, A3
-    /// For party of 2: A5, A6 (the two seats closest to middle)
+    /// For party of 1: A5 (the seat closest to middle)
     /// </summary>
     [Test]
-    public void Should_offer_seats_starting_from_middle_of_row()
+    public void Should_suggest_seats_starting_from_middle_of_row()
     {
-        var partySize = 2;
+        var partySize = 1;
 
         // Row with 10 seats - middle is between seat 5 and 6
         var a1 = new SeatingPlace("A", 1, PricingCategory.Second, SeatingPlaceAvailability.Available);
@@ -46,36 +40,12 @@ public class RowTest
 
         var row = new Row("A", new List<SeatingPlace> { a1, a2, a3, a4, a5, a6, a7, a8, a9, a10 });
 
-        // Get seats ordered by distance from middle, then take first 'partySize' seats
-        var seatingPlaces = OfferSeatsNearerTheMiddleOfTheRow(row).Take(partySize).ToList();
+        var seatingOption = row.SuggestSeatingOption(partySize, PricingCategory.First);
 
-        // A5 and A6 are the two seats closest to the middle (between 5 and 6)
-        Check.That(seatingPlaces).ContainsExactly(a5, a6);
-    }
-
-    /// <summary>
-    /// Deep Modeling: Prototype the algorithm here before integrating into Row.
-    /// This method should return all available seats ordered by distance from the middle.
-    ///
-    /// Once the algorithm works, consider:
-    /// - Should this become a method on Row?
-    /// - Should Row have a different internal representation?
-    /// - Is there a new concept trying to emerge (e.g., "MiddleOutSeatingStrategy")?
-    /// </summary>
-    private static IEnumerable<SeatingPlace> OfferSeatsNearerTheMiddleOfTheRow(Row row)
-    {
-        var rowSize = row.SeatingPlaces.Count;
-        var middleOfTheRow = (rowSize + 1) / 2.0;
-
-        return row.SeatingPlaces
-            .Where(seat => seat.IsAvailable())
-            .OrderBy(seat => DistanceFromMiddleOfTheRow(seat, middleOfTheRow))
-            .ThenBy(seat => seat.Number);
-    }
-
-    private static double DistanceFromMiddleOfTheRow(SeatingPlace seat, double middleOfTheRow)
-    {
-        return Math.Abs(seat.Number - middleOfTheRow);
+        // A5 is the seat closest to the middle (between 5 and 6)
+        Check.That(seatingOption).IsInstanceOf<SeatingOptionIsSuggested>();
+        var suggested = (SeatingOptionIsSuggested)seatingOption;
+        Check.That(suggested.Seats()).ContainsExactly(a5);
     }
 
     [TestFixture]

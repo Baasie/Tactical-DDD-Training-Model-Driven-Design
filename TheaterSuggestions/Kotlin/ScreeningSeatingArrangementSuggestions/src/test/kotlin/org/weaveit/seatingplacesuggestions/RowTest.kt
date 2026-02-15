@@ -3,16 +3,12 @@ package org.weaveit.seatingplacesuggestions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import kotlin.math.abs
 
 class RowTest {
 
     /**
-     * Deep Modeling: Before changing the domain model, prototype the new behavior
-     * in isolation to understand the algorithm and validate the approach.
-     *
-     * New Rule: Seats should be suggested starting from the middle of the row,
-     * working outward. For a row with 10 seats, the middle is between seats 5 and 6.
+     * Seats should be suggested starting from the middle of the row, working outward.
+     * For a row with 10 seats, the middle is between seats 5 and 6.
      * Seats closer to the middle are preferred.
      *
      * Row layout for this test:
@@ -21,12 +17,11 @@ class RowTest {
      *
      * Available FIRST category seats: A3, A5, A6, A7
      * Middle of row: between 5 and 6
-     * Expected order from middle outward: A5, A6, A7, A3
-     * For party of 2: A5, A6 (the two seats closest to middle)
+     * For party of 1: A5 (the seat closest to middle)
      */
     @Test
-    fun `should offer seats starting from middle of row`() {
-        val partySize = 2
+    fun `should suggest seats starting from middle of row`() {
+        val partySize = 1
 
         // Row with 10 seats - middle is between seat 5 and 6
         val a1 = SeatingPlace("A", 1, PricingCategory.SECOND, SeatingPlaceAvailability.AVAILABLE)
@@ -42,36 +37,12 @@ class RowTest {
 
         val row = Row("A", listOf(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10))
 
-        // Get seats ordered by distance from middle, then take first 'partySize' seats
-        val seatingPlaces = offerSeatsNearerTheMiddleOfTheRow(row).take(partySize)
+        val seatingOption = row.suggestSeatingOption(partySize, PricingCategory.FIRST)
 
-        // A5 and A6 are the two seats closest to the middle (between 5 and 6)
-        assertThat(seatingPlaces).containsExactly(a5, a6)
-    }
-
-    /**
-     * Deep Modeling: Prototype the algorithm here before integrating into Row.
-     * This method should return all available seats ordered by distance from the middle.
-     *
-     * Once the algorithm works, consider:
-     * - Should this become a method on Row?
-     * - Should Row have a different internal representation?
-     * - Is there a new concept trying to emerge (e.g., "MiddleOutSeatingStrategy")?
-     */
-    private fun offerSeatsNearerTheMiddleOfTheRow(row: Row): List<SeatingPlace> {
-        val rowSize = row.seatingPlaces.size
-        val middleOfTheRow = (rowSize + 1) / 2.0
-
-        return row.seatingPlaces
-            .filter { it.isAvailable() }
-            .sortedWith(
-                compareBy<SeatingPlace> { distanceFromMiddleOfTheRow(it, middleOfTheRow) }
-                    .thenBy { it.number }
-            )
-    }
-
-    private fun distanceFromMiddleOfTheRow(seat: SeatingPlace, middleOfTheRow: Double): Double {
-        return abs(seat.number - middleOfTheRow)
+        // A5 is the seat closest to the middle (between 5 and 6)
+        assertThat(seatingOption).isInstanceOf(SeatingOptionIsSuggested::class.java)
+        val suggested = seatingOption as SeatingOptionIsSuggested
+        assertThat(suggested.seats()).containsExactly(a5)
     }
 
     @Nested

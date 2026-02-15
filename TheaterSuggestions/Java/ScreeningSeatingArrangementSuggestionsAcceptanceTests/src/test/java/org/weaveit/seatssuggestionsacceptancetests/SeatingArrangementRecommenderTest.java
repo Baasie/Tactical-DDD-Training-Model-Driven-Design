@@ -63,7 +63,7 @@ class SeatingArrangementRecommenderTest {
         var seatingArrangementRecommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);
         var suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested);
 
-        assertThat(suggestionsAreMade.seatNames(PricingCategory.SECOND)).containsExactly("A1", "A2", "A9", "A10", "B1", "B2");
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.SECOND)).containsExactly("A2", "A9", "A1", "A10", "B2", "B9");
     }
 
 
@@ -85,10 +85,11 @@ class SeatingArrangementRecommenderTest {
         var seatingArrangementRecommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);
         var suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested);
 
-        assertThat(suggestionsAreMade.seatNames(PricingCategory.FIRST)).containsExactly("A3","A4","A5");
-        assertThat(suggestionsAreMade.seatNames(PricingCategory.SECOND)).containsExactly("A1", "A2", "A9");
-        assertThat(suggestionsAreMade.seatNames(PricingCategory.THIRD)).containsExactly("E1", "E2", "E3");
-        assertThat(suggestionsAreMade.seatNames(PricingCategory.MIXED)).containsExactly("A1", "A2", "A3");
+        // Middle-out ordering: seats closest to middle (5.5) come first
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.FIRST)).containsExactly("A5", "A6", "A4");
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.SECOND)).containsExactly("A2", "A9", "A1");
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.THIRD)).containsExactly("E5", "E6", "E4");
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.MIXED)).containsExactly("A5", "A6", "A4");
     }
 
     @Test

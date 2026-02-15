@@ -68,7 +68,7 @@ ReservedSeatsDto getReservedSeats(String showId)
 
 ---
 
-## Domain Objects (Lab 3 Green Test)
+## Domain Objects (Lab 3 End)
 
 | Object | Description |
 |--------|-------------|
@@ -84,6 +84,7 @@ ReservedSeatsDto getReservedSeats(String showId)
 | `SuggestionIsMade` | Value Object, immutable record, snapshot of a confirmed suggestion |
 | `SuggestionsAreMade` | Value Object, collects suggestions by pricing category |
 | `SuggestionsAreNotAvailable` | Value Object (Null Object), signals no suggestions could be made |
+| `DistanceFromRowCenter` | Value Object, calculates and compares seat distance from row center |
 | `PricingCategory` | Value Object, enum: FIRST, SECOND, THIRD, MIXED |
 
 ---

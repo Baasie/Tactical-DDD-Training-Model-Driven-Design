@@ -342,3 +342,38 @@ You may use AI to help with the integration. AI should help you think through th
 - What does "distance from middle" mean in the domain?
 - Should Row know about seat ordering strategies, or is that a separate concern?
 - How would this change if the business wanted different ordering rules in the future?
+
+---
+
+## Lab 3: End — Deep Model Integrated
+
+This branch represents the completed Lab 3. The middle-outward algorithm is integrated into the domain model, all acceptance tests pass with updated expectations, and a new domain concept has emerged.
+
+### What Changed From Green Test
+
+- **`DistanceFromRowCenter`** introduced as a new Value Object — makes the implicit concept of "how far a seat is from the center of its row" explicit in the domain model
+- **`Row.suggestSeatingOption()`** now sorts available seats using `DistanceFromRowCenter` instead of left-to-right ordering
+- **Acceptance test expectations updated** — all existing tests now expect middle-outward ordering (e.g., FIRST: `A5, A6, A4` instead of `A3, A4, A5`)
+- **Unit test prototype dissolved** — the standalone helper method is gone; the test now calls `row.suggestSeatingOption()` directly
+
+### The Deep Modeling Insight
+
+The prototype revealed that "distance from row center" is a domain concept worth naming. By extracting it into `DistanceFromRowCenter`:
+- The concept is **explicit** — anyone reading the code sees that seat ordering depends on proximity to center
+- The calculation is **isolated** — the even/odd row logic lives in one place
+- The integration is **minimal** — only one line changed in Row's suggestion method
+
+### What to Review
+
+Look at the completed integration and notice:
+- How the standalone prototype was dissolved into the model — it served its purpose and is gone
+- How `DistanceFromRowCenter` as a named Value Object makes the implicit concept explicit — this is Evans' "making implicit concepts explicit"
+- How the change in Row is a single sorting line, but all acceptance test expectations shifted — a deep model change has wide but predictable impact
+- How the rest of the domain model (AuditoriumSeatingArrangement, Recommender, SeatingOption) is completely untouched
+
+### Discussion Points
+
+1. Is `DistanceFromRowCenter` a concept a domain expert would recognize? What would they call it?
+2. Could the same deep modeling approach reveal other hidden concepts in your own projects?
+3. How did prototyping outside the model help you avoid retrofit bias?
+4. What would happen if the business wanted different ordering rules for different auditoriums?

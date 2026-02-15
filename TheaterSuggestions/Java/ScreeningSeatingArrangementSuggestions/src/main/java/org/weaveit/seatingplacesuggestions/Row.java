@@ -1,6 +1,7 @@
 package org.weaveit.seatingplacesuggestions;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -12,17 +13,23 @@ public record Row(String name, List<SeatingPlace> seatingPlaces) {
     }
 
     public SeatingOption suggestSeatingOption(int partyRequested, PricingCategory pricingCategory) {
-        var foundSeats = new ArrayList<SeatingPlace>();
+        var selectedSeats = new ArrayList<SeatingPlace>();
+        int rowSize = seatingPlaces.size();
 
-        for (var seat : seatingPlaces) {
-            if (seat.isAvailable() && seat.matchCategory(pricingCategory)) {
-                foundSeats.add(seat);
+        var availableSeatsCloserToCenter = seatingPlaces.stream()
+                .filter(SeatingPlace::isAvailable)
+                .filter(seat -> seat.matchCategory(pricingCategory))
+                .sorted(Comparator.comparing(seat -> DistanceFromRowCenter.of(seat.number(), rowSize)))
+                .toList();
 
-                if (foundSeats.size() == partyRequested) {
-                    return new SeatingOptionIsSuggested(partyRequested, pricingCategory, foundSeats);
-                }
+        for (var seat : availableSeatsCloserToCenter) {
+            selectedSeats.add(seat);
+
+            if (selectedSeats.size() == partyRequested) {
+                return new SeatingOptionIsSuggested(partyRequested, pricingCategory, selectedSeats);
             }
         }
+
         return new SeatingOptionIsNotAvailable(partyRequested, pricingCategory);
     }
 
