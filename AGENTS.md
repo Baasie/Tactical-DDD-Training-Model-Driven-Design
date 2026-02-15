@@ -65,15 +65,21 @@ TheaterSuggestions/
 - Letters (A, B, C) = row name
 - Numbers in header = seat number
 
-**Current State (First Test Green):**
-- First acceptance test passes, tests 2 and 3 are commented out
-- Minimal implementation — only enough code to pass the first test
+**Current State (All Tests Green):**
+- All three acceptance tests pass
+- Full implementation covering all pricing categories, no-seats-available case, and multi-seat parties
 
 **Domain Objects Implemented:**
-- `SeatingArrangementRecommender` - makes suggestions (currently hardcoded to FIRST category)
-- `AuditoriumSeatingArrangements` - anti-corruption layer, returns rows as a map
-- `Row` - data holder for seating places
-- `SeatingPlace` - single seat with availability as boolean
-- `SuggestionsAreMade` - collects seat names by pricing category
+- `SeatingArrangementRecommender` - orchestrates 3 suggestions per pricing category
+- `AuditoriumSeatingArrangements` - anti-corruption layer, converts DTOs to domain objects
+- `AuditoriumSeatingArrangement` - coordinates seat search across all rows
+- `Row` - finds groups of available seats matching party size and pricing category
+- `SeatingPlace` - single seat with availability enum, can allocate itself
+- `SeatingPlaceAvailability` - enum: AVAILABLE, RESERVED, ALLOCATED
+- `SeatingOptionIsSuggested` - accumulates matching seats from a row
+- `SeatingOptionIsNotAvailable` - null object when row cannot satisfy request
+- `SuggestionIsMade` - immutable snapshot of a confirmed suggestion
+- `SuggestionsAreMade` - collects suggestions by pricing category
+- `SuggestionsAreNotAvailable` - null object when no suggestions could be made
 - `PricingCategory` - enum: FIRST, SECOND, THIRD
 

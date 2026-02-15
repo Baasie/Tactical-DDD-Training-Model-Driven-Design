@@ -4,11 +4,23 @@ class SeatingPlace(
     private val rowName: String,
     private val number: Int,
     private val pricingCategory: PricingCategory,
-    private val isAvailable: Boolean
+    private var seatingPlaceAvailability: SeatingPlaceAvailability
 ) {
-    fun isAvailable(): Boolean = isAvailable
+    fun isAvailable(): Boolean {
+        return seatingPlaceAvailability == SeatingPlaceAvailability.AVAILABLE
+    }
 
-    fun matchCategory(pricingCategory: PricingCategory): Boolean = this.pricingCategory == pricingCategory
+    fun matchCategory(pricingCategory: PricingCategory): Boolean {
+        return this.pricingCategory == pricingCategory
+    }
 
-    fun name(): String = "$rowName$number"
+    fun allocate() {
+        if (seatingPlaceAvailability == SeatingPlaceAvailability.AVAILABLE) {
+            seatingPlaceAvailability = SeatingPlaceAvailability.ALLOCATED
+        }
+    }
+
+    override fun toString(): String {
+        return "$rowName$number"
+    }
 }

@@ -41,16 +41,16 @@ class SeatingArrangementRecommenderTest {
         val showId = "5"
         val partyRequested = 1
 
-//        val auditoriumSeatingArrangements = AuditoriumSeatingArrangements(
-//            AuditoriumLayoutRepository(),
-//            ReservationsProvider()
-//        )
-//        val seatingArrangementRecommender = SeatingArrangementRecommender(auditoriumSeatingArrangements)
-//        val suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested)
-//
-//        assertEquals(partyRequested, suggestionsAreMade.partyRequested, "Party requested should match")
-//        assertEquals(showId, suggestionsAreMade.showId, "Show ID should match")
-//        assertIs<SuggestionsAreNotAvailable>(suggestionsAreMade, "Suggestions made should be an instance of SuggestionNotAvailable")
+        val auditoriumSeatingArrangements = AuditoriumSeatingArrangements(
+            AuditoriumLayoutRepository(),
+            ReservationsProvider()
+        )
+        val seatingArrangementRecommender = SeatingArrangementRecommender(auditoriumSeatingArrangements)
+        val suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested)
+
+        assertEquals(partyRequested, suggestionsAreMade.partyRequested, "Party requested should match")
+        assertEquals(showId, suggestionsAreMade.showId, "Show ID should match")
+        assertIs<SuggestionsAreNotAvailable>(suggestionsAreMade, "Suggestions made should be an instance of SuggestionNotAvailable")
     }
 
     @Test
@@ -63,14 +63,14 @@ class SeatingArrangementRecommenderTest {
         val showId = "17"
         val partyRequested = 2
 
-//        val auditoriumSeatingArrangements = AuditoriumSeatingArrangements(
-//            AuditoriumLayoutRepository(),
-//            ReservationsProvider()
-//        )
-//        val seatingArrangementRecommender = SeatingArrangementRecommender(auditoriumSeatingArrangements)
-//        val suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested)
-//
-//        assertThat(suggestionsAreMade.seatNames(PricingCategory.SECOND)).containsExactly("A1", "A2", "A9", "A10", "B1", "B2")
+        val auditoriumSeatingArrangements = AuditoriumSeatingArrangements(
+            AuditoriumLayoutRepository(),
+            ReservationsProvider()
+        )
+        val seatingArrangementRecommender = SeatingArrangementRecommender(auditoriumSeatingArrangements)
+        val suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested)
+
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.SECOND)).containsExactly("A1", "A2", "A9", "A10", "B1", "B2")
     }
 
 }

@@ -11,5 +11,23 @@ public class Row
         _seatingPlaces = seatingPlaces;
     }
 
-    public IEnumerable<SeatingPlace> SeatingPlaces => _seatingPlaces;
+    public SeatingOptionIsSuggested SuggestSeatingOption(int partyRequested, PricingCategory pricingCategory)
+    {
+        var seatAllocation = new SeatingOptionIsSuggested(partyRequested, pricingCategory);
+
+        foreach (var seat in _seatingPlaces)
+        {
+            if (seat.IsAvailable() && seat.MatchCategory(pricingCategory))
+            {
+                seatAllocation.AddSeat(seat);
+
+                if (seatAllocation.MatchExpectation())
+                {
+                    return seatAllocation;
+                }
+            }
+        }
+
+        return new SeatingOptionIsNotAvailable(partyRequested, pricingCategory);
+    }
 }

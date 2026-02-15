@@ -11,7 +11,20 @@ public class Row {
         this.seatingPlaces = seatingPlaces;
     }
 
-    public List<SeatingPlace> seatingPlaces() {
-        return seatingPlaces;
+    public SeatingOptionIsSuggested suggestSeatingOption(int partyRequested, PricingCategory pricingCategory) {
+
+        var seatAllocation = new SeatingOptionIsSuggested(partyRequested, pricingCategory);
+
+        for (var seat : seatingPlaces) {
+            if (seat.isAvailable() && seat.matchCategory(pricingCategory)) {
+                seatAllocation.addSeat(seat);
+
+                if (seatAllocation.matchExpectation())
+                    return seatAllocation;
+
+            }
+        }
+        return new SeatingOptionIsNotAvailable(partyRequested, pricingCategory);
     }
+
 }

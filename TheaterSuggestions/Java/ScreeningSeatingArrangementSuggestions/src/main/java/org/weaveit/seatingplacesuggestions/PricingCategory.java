@@ -1,11 +1,21 @@
 package org.weaveit.seatingplacesuggestions;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public enum PricingCategory {
     FIRST(1),
     SECOND(2),
     THIRD(3);
 
     private final int value;
+    private static final Map<Integer, PricingCategory> map;
+
+    static {
+        map = Stream.of(PricingCategory.values())
+                .collect(Collectors.toUnmodifiableMap(PricingCategory::getValue, category -> category));
+    }
 
     PricingCategory(int value) {
         this.value = value;
@@ -15,12 +25,11 @@ public enum PricingCategory {
         return value;
     }
 
-    public static PricingCategory valueOf(int value) {
-        for (var category : values()) {
-            if (category.value == value) {
-                return category;
-            }
+    public static PricingCategory valueOf(int pageType) {
+        var category = map.get(pageType);
+        if (category == null) {
+            throw new IllegalArgumentException("No enum constant with value " + pageType);
         }
-        throw new IllegalArgumentException("No category for value: " + value);
+        return category;
     }
 }

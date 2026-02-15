@@ -2,30 +2,49 @@ namespace SeatsSuggestions;
 
 public class SuggestionsAreMade
 {
-    private readonly Dictionary<PricingCategory, List<string>> _seatsByCategory = new();
-
-    public string ShowId { get; }
-    public int PartyRequested { get; }
+    private readonly string _showId;
+    private readonly int _partyRequested;
+    private readonly Dictionary<PricingCategory, List<SuggestionIsMade>> _forCategory = new();
 
     public SuggestionsAreMade(string showId, int partyRequested)
     {
-        ShowId = showId;
-        PartyRequested = partyRequested;
+        _showId = showId;
+        _partyRequested = partyRequested;
+
+        InstantiateAnEmptyListForEveryPricingCategory();
     }
 
-    public void AddSeats(PricingCategory category, List<string> seatNames)
+    public List<string> SeatNames(PricingCategory pricingCategory)
     {
-        if (!_seatsByCategory.ContainsKey(category))
+        return _forCategory[pricingCategory]
+            .SelectMany(s => s.SeatNames())
+            .ToList();
+    }
+
+    private void InstantiateAnEmptyListForEveryPricingCategory()
+    {
+        foreach (PricingCategory pricingCategory in Enum.GetValues(typeof(PricingCategory)))
         {
-            _seatsByCategory[category] = new List<string>();
+            _forCategory[pricingCategory] = new List<SuggestionIsMade>();
         }
-        _seatsByCategory[category].AddRange(seatNames);
     }
 
-    public IEnumerable<string> SeatNames(PricingCategory pricingCategory)
+    public void Add(IEnumerable<SuggestionIsMade> suggestions)
     {
-        return _seatsByCategory.TryGetValue(pricingCategory, out var seats)
-            ? seats
-            : Enumerable.Empty<string>();
+        foreach (var suggestionIsMade in suggestions)
+        {
+            _forCategory[suggestionIsMade.PricingCategory].Add(suggestionIsMade);
+        }
     }
+
+    public bool MatchExpectations()
+    {
+        return _forCategory.Values
+            .SelectMany(list => list)
+            .Any(s => s.MatchExpectation());
+    }
+
+    public string ShowId => _showId;
+
+    public int PartyRequested => _partyRequested;
 }

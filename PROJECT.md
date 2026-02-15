@@ -43,8 +43,9 @@ Purpose: Orchestrates the suggestion workflow — makes sure seating place sugge
 **Collaborators:**
 - AuditoriumSeatingArrangements
 - AuditoriumSeatingArrangement
-- Pricing Category
-- Suggestion Is Made
+- SeatingOptionIsSuggested
+- SeatingPlace
+- SuggestionsAreMade
 
 ### Auditorium Seating Arrangements
 
@@ -62,7 +63,6 @@ Purpose: Acts as the anti-corruption layer — fetches external data (layout + r
 **Collaborators:**
 - AuditoriumLayoutRepository (external)
 - ReservationsProvider (external)
-- AuditoriumSeatingArrangement
 
 ### Auditorium Seating Arrangement
 
@@ -77,8 +77,6 @@ Purpose: Represents the full seating layout of an auditorium — coordinates the
 
 **Collaborators:**
 - Row
-- SeatingOptionIsSuggested
-- SeatingOptionIsNotAvailable
 
 ### Row
 
@@ -95,7 +93,35 @@ Purpose: Represents a single row of seats — finds groups of available seats th
 **Collaborators:**
 - SeatingPlace
 - SeatingOptionIsSuggested
-- SeatingOptionIsNotAvailable
+
+### Seating Option Is Suggested
+
+Purpose: Represents a potential seating suggestion being assembled — collects seats from a row that match a party request.
+
+**Knows:**
+- Its pricing category
+- Its party size requested
+- Its collected seats so far
+
+**Does:**
+- Accumulate matching seats into the suggestion
+- Check if the collected seats satisfy the party size
+
+**Collaborators:**
+- None
+
+### Seating Option Is Not Available
+
+Purpose: Signals that a row could not satisfy the seating request — acts as a null object for Seating Option Is Suggested.
+
+**Knows:**
+- The pricing category and party size (inherited, empty seats)
+
+**Does:**
+- Signal "no seating option could be found in this row"
+
+**Collaborators:**
+- None
 
 ### Seating Place
 
@@ -113,8 +139,7 @@ Purpose: Represents a single seat in the auditorium — knows its identity, cate
 - Generate its display name (e.g. "A3")
 
 **Collaborators:**
-- PricingCategory
-- SeatingPlaceAvailability
+- None
 
 ### Seating Place Availability
 
@@ -128,6 +153,22 @@ Purpose: Represents the possible states a seat can be in.
 
 **Collaborators:**
 - None
+
+### Suggestion Is Made
+
+Purpose: Represents a confirmed suggestion — an immutable snapshot of seats that fulfilled a party request.
+
+**Knows:**
+- Its suggested seats
+- Its party size requested
+- Its pricing category
+
+**Does:**
+- Return seat names for display
+- Check if the suggestion matches the party size expectation
+
+**Collaborators:**
+- SeatingPlace
 
 ### Suggestions Are Made
 
@@ -144,7 +185,6 @@ Purpose: Holds the complete set of suggestions for a show request — organizes 
 
 **Collaborators:**
 - SuggestionIsMade
-- PricingCategory
 
 ### Suggestions Are Not Available
 

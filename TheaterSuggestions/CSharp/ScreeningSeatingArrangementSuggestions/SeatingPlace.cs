@@ -5,19 +5,36 @@ public class SeatingPlace
     private readonly string _rowName;
     private readonly int _number;
     private readonly PricingCategory _pricingCategory;
-    private readonly bool _isAvailable;
+    private SeatingPlaceAvailability _seatingPlaceAvailability;
 
-    public SeatingPlace(string rowName, int number, PricingCategory pricingCategory, bool isAvailable)
+    public SeatingPlace(string rowName, int number, PricingCategory pricingCategory, SeatingPlaceAvailability seatingPlaceAvailability)
     {
         _rowName = rowName;
         _number = number;
         _pricingCategory = pricingCategory;
-        _isAvailable = isAvailable;
+        _seatingPlaceAvailability = seatingPlaceAvailability;
     }
 
-    public bool IsAvailable() => _isAvailable;
+    public bool IsAvailable()
+    {
+        return _seatingPlaceAvailability == SeatingPlaceAvailability.Available;
+    }
 
-    public bool MatchCategory(PricingCategory pricingCategory) => _pricingCategory == pricingCategory;
+    public bool MatchCategory(PricingCategory pricingCategory)
+    {
+        return _pricingCategory == pricingCategory;
+    }
 
-    public string Name => $"{_rowName}{_number}";
+    public void Allocate()
+    {
+        if (_seatingPlaceAvailability == SeatingPlaceAvailability.Available)
+        {
+            _seatingPlaceAvailability = SeatingPlaceAvailability.Allocated;
+        }
+    }
+
+    public override string ToString()
+    {
+        return $"{_rowName}{_number}";
+    }
 }

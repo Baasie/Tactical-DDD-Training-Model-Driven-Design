@@ -9,14 +9,19 @@ public enum PricingCategory
 
 public static class PricingCategoryExtensions
 {
+    private static readonly Dictionary<int, PricingCategory> Map = new()
+    {
+        { 1, PricingCategory.First },
+        { 2, PricingCategory.Second },
+        { 3, PricingCategory.Third }
+    };
+
     public static PricingCategory FromValue(int value)
     {
-        return value switch
+        if (Map.TryGetValue(value, out var category))
         {
-            1 => PricingCategory.First,
-            2 => PricingCategory.Second,
-            3 => PricingCategory.Third,
-            _ => throw new ArgumentException($"No category for value: {value}")
-        };
+            return category;
+        }
+        throw new ArgumentException($"No enum constant with value {value}");
     }
 }

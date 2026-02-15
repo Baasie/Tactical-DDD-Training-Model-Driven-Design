@@ -2,6 +2,7 @@ namespace SeatsSuggestions;
 
 public class SeatingArrangementRecommender
 {
+    private const int NumberOfSuggestions = 3;
     private readonly AuditoriumSeatingArrangements _auditoriumSeatingArrangements;
 
     public SeatingArrangementRecommender(AuditoriumSeatingArrangements auditoriumSeatingArrangements)
@@ -11,28 +12,44 @@ public class SeatingArrangementRecommender
 
     public SuggestionsAreMade MakeSuggestions(string showId, int partyRequested)
     {
-        var rows = _auditoriumSeatingArrangements.FindByShowId(showId);
-        var suggestionsAreMade = new SuggestionsAreMade(showId, partyRequested);
+        var auditoriumSeating = _auditoriumSeatingArrangements.FindByShowId(showId);
 
-        foreach (var row in rows.Values)
+        var suggestionsMade = new SuggestionsAreMade(showId, partyRequested);
+
+        suggestionsMade.Add(GiveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.First));
+        suggestionsMade.Add(GiveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.Second));
+        suggestionsMade.Add(GiveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.Third));
+
+        if (suggestionsMade.MatchExpectations())
         {
-            var seatsFound = new List<SeatingPlace>();
+            return suggestionsMade;
+        }
 
-            foreach (var seat in row.SeatingPlaces)
+        return new SuggestionsAreNotAvailable(showId, partyRequested);
+    }
+
+    private static List<SuggestionIsMade> GiveMeSuggestionsFor(
+        AuditoriumSeatingArrangement auditoriumSeatingArrangement,
+        int partyRequested,
+        PricingCategory pricingCategory)
+    {
+        var foundedSuggestions = new List<SuggestionIsMade>();
+
+        for (int i = 0; i < NumberOfSuggestions; i++)
+        {
+            var seatingOptionSuggested = auditoriumSeatingArrangement.SuggestSeatingOptionFor(partyRequested, pricingCategory);
+
+            if (seatingOptionSuggested.MatchExpectation())
             {
-                if (seat.IsAvailable() && seat.MatchCategory(PricingCategory.First))
+                foreach (var seatingPlace in seatingOptionSuggested.Seats())
                 {
-                    seatsFound.Add(seat);
-
-                    if (seatsFound.Count == partyRequested)
-                    {
-                        suggestionsAreMade.AddSeats(PricingCategory.First, seatsFound.Select(s => s.Name).ToList());
-                        return suggestionsAreMade;
-                    }
+                    seatingPlace.Allocate();
                 }
+
+                foundedSuggestions.Add(new SuggestionIsMade(seatingOptionSuggested));
             }
         }
 
-        return suggestionsAreMade;
+        return foundedSuggestions;
     }
 }

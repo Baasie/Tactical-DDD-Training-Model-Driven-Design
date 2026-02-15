@@ -66,15 +66,21 @@ fun getReservedSeats(showId: String): ReservedSeatsDto
 
 ---
 
-## Domain Objects (First Test Green)
+## Domain Objects (All Tests Green)
 
 | Object | Description |
 |--------|-------------|
-| `SeatingArrangementRecommender` | Makes suggestions (currently hardcoded to FIRST category) |
-| `AuditoriumSeatingArrangements` | Anti-corruption layer, returns rows as a map |
-| `Row` | Data holder for seating places |
-| `SeatingPlace` | Single seat with availability as boolean |
-| `SuggestionsAreMade` | Collects seat names by pricing category |
+| `SeatingArrangementRecommender` | Orchestrates 3 suggestions per pricing category |
+| `AuditoriumSeatingArrangements` | Anti-corruption layer, converts DTOs to domain objects |
+| `AuditoriumSeatingArrangement` | Coordinates seat search across all rows |
+| `Row` | Finds groups of available seats matching party size and pricing category |
+| `SeatingPlace` | Single seat with availability enum, can allocate itself |
+| `SeatingPlaceAvailability` | Enum: AVAILABLE, RESERVED, ALLOCATED |
+| `SeatingOptionIsSuggested` | Accumulates matching seats from a row |
+| `SeatingOptionIsNotAvailable` | Null object when row cannot satisfy request |
+| `SuggestionIsMade` | Immutable snapshot of a confirmed suggestion |
+| `SuggestionsAreMade` | Collects suggestions by pricing category |
+| `SuggestionsAreNotAvailable` | Null object when no suggestions could be made |
 | `PricingCategory` | Enum: FIRST, SECOND, THIRD |
 
 ---

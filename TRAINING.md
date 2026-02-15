@@ -14,7 +14,7 @@ Learn to translate CRC cards into working code using Outside-In TDD.
 
 - **Acceptance tests** with commented code showing exactly what to call
 - **Your CRC cards** from the earlier modeling session
-- **One example CRC card** in PROJECT.md showing how cards translate to code
+- **CRC cards** in PROJECT.md as a reference for the full domain model
 - **A skeleton class** (`SeatingArrangementRecommender`) as a starting point
 - **ExternalDependencies** module already implemented (do not modify)
 
@@ -52,6 +52,30 @@ Before moving to the next test, look at the current implementation and notice:
 - Where behaviour is concentrated (is it well-distributed across objects?)
 - What will need to change when the next test is uncommented
 - How the current design will resist or support the remaining requirements
+
+---
+
+## Lab 1: End — All Acceptance Tests Pass
+
+This branch represents the completed Lab 1. All three acceptance tests pass with a refactored implementation that covers all pricing categories, handles the "no seats available" case, and suggests multiple seats for larger parties.
+
+### What Changed From First Green
+
+- `SeatingArrangementRecommender` now iterates all three pricing categories (not hardcoded to FIRST)
+- `AuditoriumSeatingArrangement` introduced as a domain object that coordinates seat search across rows
+- `Row` has behaviour — finds groups of available seats matching a party size and pricing category
+- `SeatingPlace` uses `SeatingPlaceAvailability` enum instead of a boolean, and can allocate itself
+- `SeatingOptionIsSuggested` / `SeatingOptionIsNotAvailable` — polymorphic return from Row and AuditoriumSeatingArrangement
+- `SuggestionIsMade` — immutable snapshot created from a confirmed SeatingOptionIsSuggested
+- `SuggestionsAreNotAvailable` — null object signalling no suggestions could be made
+
+### What to Review
+
+Look at the completed implementation and notice:
+- How CRC card responsibilities map to the actual code
+- Where state mutation happens (SeatingPlace allocation) — this becomes a design discussion in Lab 2
+- How the polymorphic return pattern (SeatingOptionIsSuggested / SeatingOptionIsNotAvailable) eliminates null checks
+- How the Recommender orchestrates the workflow: suggest → allocate → repeat
 
 ---
 

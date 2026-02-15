@@ -5,39 +5,53 @@ namespace SeatsSuggestions;
 
 public class AuditoriumSeatingArrangements
 {
+    private readonly ReservationsProvider _reservedSeatsRepository;
     private readonly AuditoriumLayoutRepository _auditoriumLayoutRepository;
-    private readonly ReservationsProvider _reservationsProvider;
 
     public AuditoriumSeatingArrangements(AuditoriumLayoutRepository auditoriumLayoutRepository, ReservationsProvider reservationsProvider)
     {
         _auditoriumLayoutRepository = auditoriumLayoutRepository;
-        _reservationsProvider = reservationsProvider;
+        _reservedSeatsRepository = reservationsProvider;
     }
 
-    public Dictionary<string, Row> FindByShowId(string showId)
+    public AuditoriumSeatingArrangement FindByShowId(string showId)
     {
-        var auditoriumDto = _auditoriumLayoutRepository.FindByShowId(showId);
-        var reservedSeatsDto = _reservationsProvider.GetReservedSeats(showId);
+        return Adapt(
+            _auditoriumLayoutRepository.FindByShowId(showId),
+            _reservedSeatsRepository.GetReservedSeats(showId));
+    }
 
+    private AuditoriumSeatingArrangement Adapt(AuditoriumDto auditoriumDto, ReservedSeatsDto reservedSeatsDto)
+    {
         var rows = new Dictionary<string, Row>();
 
-        foreach (var rowEntry in auditoriumDto.Rows)
+        foreach (var rowDto in auditoriumDto.Rows)
         {
-            var rowName = rowEntry.Key;
-            var seatingPlaces = new List<SeatingPlace>();
+            var seats = new List<SeatingPlace>();
 
-            foreach (var seatDto in rowEntry.Value)
+            foreach (var seatDto in rowDto.Value)
             {
-                var number = int.Parse(seatDto.Name.Substring(1));
-                var category = PricingCategoryExtensions.FromValue(seatDto.Category);
+                var rowName = rowDto.Key;
+                var number = ExtractNumber(seatDto.Name);
+                var pricingCategory = PricingCategoryExtensions.FromValue(seatDto.Category);
+
                 var isReserved = reservedSeatsDto.ReservedSeats?.Contains(seatDto.Name) ?? false;
 
-                seatingPlaces.Add(new SeatingPlace(rowName, number, category, !isReserved));
+                seats.Add(new SeatingPlace(
+                    rowName,
+                    number,
+                    pricingCategory,
+                    isReserved ? SeatingPlaceAvailability.Reserved : SeatingPlaceAvailability.Available));
             }
 
-            rows[rowName] = new Row(rowName, seatingPlaces);
+            rows[rowDto.Key] = new Row(rowDto.Key, seats);
         }
 
-        return rows;
+        return new AuditoriumSeatingArrangement(rows);
+    }
+
+    private static int ExtractNumber(string name)
+    {
+        return int.Parse(name.Substring(1));
     }
 }

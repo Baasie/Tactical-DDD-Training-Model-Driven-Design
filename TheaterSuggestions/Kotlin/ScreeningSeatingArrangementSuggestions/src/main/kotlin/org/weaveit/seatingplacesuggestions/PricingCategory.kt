@@ -6,9 +6,11 @@ enum class PricingCategory(val value: Int) {
     THIRD(3);
 
     companion object {
-        fun fromValue(value: Int): PricingCategory {
-            return entries.find { it.value == value }
-                ?: throw IllegalArgumentException("No category for value: $value")
+        private val map = entries.associateBy { it.value }
+
+        fun valueOf(value: Int): PricingCategory {
+            return map[value]
+                ?: throw IllegalArgumentException("No enum constant with value $value")
         }
     }
 }
