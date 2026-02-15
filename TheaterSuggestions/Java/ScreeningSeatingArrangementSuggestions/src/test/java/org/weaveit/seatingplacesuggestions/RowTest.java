@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,11 +68,19 @@ class RowTest {
      * - Is there a new concept trying to emerge (e.g., "MiddleOutSeatingStrategy")?
      */
     public List<SeatingPlace> offerSeatsNearerTheMiddleOfTheRow(Row row) {
-        // TODO: Implement your logic here
-        // Hint: Calculate distance of each seat from the middle of the row
-        // For a row of size N, middle = (N + 1) / 2.0
-        // Sort seats by their distance from middle (ascending)
-        return new ArrayList<>();
+        int rowSize = row.seatingPlaces().size();
+        double middleOfTheRow = (rowSize + 1) / 2.0;
+
+        return row.seatingPlaces().stream()
+                .filter(SeatingPlace::isAvailable)
+                .sorted(Comparator
+                        .comparingDouble((SeatingPlace seat) -> distanceFromMiddleOfTheRow(seat, middleOfTheRow))
+                        .thenComparingInt(SeatingPlace::number))
+                .collect(Collectors.toList());
+    }
+
+    private double distanceFromMiddleOfTheRow(SeatingPlace seat, double middleOfTheRow) {
+        return Math.abs(seat.number() - middleOfTheRow);
     }
 
     @Nested

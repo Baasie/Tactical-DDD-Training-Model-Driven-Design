@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NFluent;
@@ -63,11 +64,18 @@ public class RowTest
     /// </summary>
     private static IEnumerable<SeatingPlace> OfferSeatsNearerTheMiddleOfTheRow(Row row)
     {
-        // TODO: Implement your logic here
-        // Hint: Calculate distance of each seat from the middle of the row
-        // For a row of size N, middle = (N + 1) / 2.0
-        // Sort seats by their distance from middle (ascending)
-        return Enumerable.Empty<SeatingPlace>();
+        var rowSize = row.SeatingPlaces.Count;
+        var middleOfTheRow = (rowSize + 1) / 2.0;
+
+        return row.SeatingPlaces
+            .Where(seat => seat.IsAvailable())
+            .OrderBy(seat => DistanceFromMiddleOfTheRow(seat, middleOfTheRow))
+            .ThenBy(seat => seat.Number);
+    }
+
+    private static double DistanceFromMiddleOfTheRow(SeatingPlace seat, double middleOfTheRow)
+    {
+        return Math.Abs(seat.Number - middleOfTheRow);
     }
 
     [TestFixture]

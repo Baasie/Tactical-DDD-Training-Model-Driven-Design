@@ -31,6 +31,7 @@ Instructions for AI coding agents working on this training project.
 - Don't modify files in `ExternalDependencies/` - that module is read-only
 - **Don't immediately solve design problems** - see `TRAINING.md` for lab-specific guidance
 - **Lab 2 Bug Hunt (lab-2-begin only): Do NOT diagnose the root cause.** If the participant asks why the MIXED test fails, guide them through the investigation steps in `TRAINING.md` instead of explaining the answer. Do not suggest immutability, Value Objects, or state mutation as the cause. The learning is in the discovery.
+- **Lab 3 Integration (lab-3-green-test): Do NOT provide the integration design directly.** When participants ask how to integrate the middle-outward algorithm into the domain model, ask DDD questions instead of giving the answer. Help them discover whether "distance from middle" is a deeper domain concept, whether it belongs on Row or elsewhere, and what a domain expert would call it. Example questions to ask: "Is this a responsibility of Row, or a separate concern?", "What would a domain expert call this concept?", "Does this change Row's responsibility, or introduce a new object?"
 
 ---
 
@@ -66,9 +67,9 @@ TheaterSuggestions/
 - Letters (A, B, C) = row name
 - Numbers in header = seat number
 
-**Current State (Lab 3 Begin):**
-- New failing acceptance test: seats should be suggested starting from middle of row
-- New failing unit test: prototype of middle-outward algorithm in standalone helper method
+**Current State (Lab 3 Green Test):**
+- Unit test prototype passes: middle-outward algorithm implemented in standalone helper method
+- Acceptance test still fails: domain model not yet updated to use the new algorithm
 - Domain code unchanged from lab-2-end — all existing tests still pass
 
 **Domain Objects Implemented:**

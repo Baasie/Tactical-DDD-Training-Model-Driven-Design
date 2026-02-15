@@ -3,6 +3,7 @@ package org.weaveit.seatingplacesuggestions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import kotlin.math.abs
 
 class RowTest {
 
@@ -58,11 +59,19 @@ class RowTest {
      * - Is there a new concept trying to emerge (e.g., "MiddleOutSeatingStrategy")?
      */
     private fun offerSeatsNearerTheMiddleOfTheRow(row: Row): List<SeatingPlace> {
-        // TODO: Implement your logic here
-        // Hint: Calculate distance of each seat from the middle of the row
-        // For a row of size N, middle = (N + 1) / 2.0
-        // Sort seats by their distance from middle (ascending)
-        return emptyList()
+        val rowSize = row.seatingPlaces.size
+        val middleOfTheRow = (rowSize + 1) / 2.0
+
+        return row.seatingPlaces
+            .filter { it.isAvailable() }
+            .sortedWith(
+                compareBy<SeatingPlace> { distanceFromMiddleOfTheRow(it, middleOfTheRow) }
+                    .thenBy { it.number }
+            )
+    }
+
+    private fun distanceFromMiddleOfTheRow(seat: SeatingPlace, middleOfTheRow: Double): Double {
+        return abs(seat.number - middleOfTheRow)
     }
 
     @Nested

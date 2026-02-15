@@ -292,3 +292,53 @@ You may use AI to help implement the algorithm. However, consider:
 - Ask AI to help with the standalone prototype first
 - Discuss with AI where the behaviour should live in the domain model — what are the trade-offs?
 - Use AI to review whether your integration preserves the existing model's design qualities
+
+---
+
+## Lab 3: Green Test — Prototype Algorithm Works
+
+This branch represents the "green" step for the deep modeling prototype. The standalone helper method passes its unit test, but the domain model hasn't been updated yet — the acceptance test still fails.
+
+### What Changed From Begin
+
+The `offerSeatsNearerTheMiddleOfTheRow()` helper method is now implemented in all 3 languages:
+
+1. Calculate the middle of the row: `(rowSize + 1) / 2.0`
+2. Filter to available seats only
+3. Sort by distance from middle (ascending), with seat number as tiebreaker
+4. Return the sorted list
+
+A `distanceFromMiddleOfTheRow()` helper extracts the distance calculation.
+
+### Current State
+
+- **Unit test**: Green — the prototype algorithm correctly orders seats from middle outward
+- **Acceptance test**: Still red — the domain model (Row's `suggestSeatingOption()`) hasn't been updated to use this algorithm
+
+### What to Review
+
+Before integrating into the domain model, notice:
+- The algorithm introduces the concept of "distance from middle" — is this a domain concept that deserves its own representation?
+- The helper works on a Row but lives outside it — where should this behaviour go?
+- The current `suggestSeatingOption()` on Row finds consecutive seats from left to right — the new algorithm fundamentally changes the ordering. How should these two behaviours relate?
+
+### Next Step: Integrate Into the Domain Model
+
+The prototype works. Now the real design question: **where does this behaviour belong?**
+
+This is not just a coding exercise — it's a modeling question. Consider:
+
+1. **Is this simply a new method on Row?** The algorithm operates on a Row's seats. But `suggestSeatingOption()` already does something similar — would adding another method make Row's responsibilities too broad?
+
+2. **Is "distance from middle" a deeper concept?** The prototype revealed that seat ordering depends on a seat's position relative to the center of its row. Is this a property of the seat, the row, or something else entirely?
+
+3. **Would a domain expert recognize this concept?** If you described this to someone who manages theater seating, what words would they use? "Center seats"? "Preferred seating"? "Seat desirability"?
+
+4. **Does the current model need to change, or does a new concept need to emerge?** Deep modeling often reveals concepts that were implicit in the domain but absent from the model.
+
+### Using AI Assistants (Integration Phase)
+
+You may use AI to help with the integration. AI should help you think through the design, not hand you the answer. Expect it to ask you questions like:
+- What does "distance from middle" mean in the domain?
+- Should Row know about seat ordering strategies, or is that a separate concern?
+- How would this change if the business wanted different ordering rules in the future?
