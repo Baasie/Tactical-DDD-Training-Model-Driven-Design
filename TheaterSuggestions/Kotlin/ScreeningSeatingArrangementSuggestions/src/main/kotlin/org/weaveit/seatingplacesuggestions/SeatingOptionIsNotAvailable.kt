@@ -1,6 +1,11 @@
 package org.weaveit.seatingplacesuggestions
 
-class SeatingOptionIsNotAvailable(
-    partyRequested: Int,
-    pricingCategory: PricingCategory
-) : SeatingOptionIsSuggested(partyRequested, pricingCategory)
+data class SeatingOptionIsNotAvailable(
+    override val partyRequested: Int,
+    override val pricingCategory: PricingCategory
+) : SeatingOption {
+
+    override fun matchExpectation(): Boolean = false
+
+    override fun seats(): List<SeatingPlace> = emptyList()
+}

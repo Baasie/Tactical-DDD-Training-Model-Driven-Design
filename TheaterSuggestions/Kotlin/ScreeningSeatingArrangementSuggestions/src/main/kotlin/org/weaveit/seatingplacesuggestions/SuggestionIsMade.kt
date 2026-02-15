@@ -1,15 +1,24 @@
 package org.weaveit.seatingplacesuggestions
 
-class SuggestionIsMade(seatingOptionIsSuggested: SeatingOptionIsSuggested) {
-    private val suggestedSeats: List<SeatingPlace> = seatingOptionIsSuggested.seats()
-    private val partyRequested: Int = seatingOptionIsSuggested.partyRequested
-    val pricingCategory: PricingCategory = seatingOptionIsSuggested.pricingCategory
+data class SuggestionIsMade private constructor(
+    private val _suggestedSeats: List<SeatingPlace>,
+    val partyRequested: Int,
+    val pricingCategory: PricingCategory
+) {
+    val suggestedSeats: List<SeatingPlace> get() = _suggestedSeats
 
-    fun seatNames(): List<String> {
-        return suggestedSeats.map { it.toString() }
+    companion object {
+        operator fun invoke(
+            suggestedSeats: List<SeatingPlace>,
+            partyRequested: Int,
+            pricingCategory: PricingCategory
+        ): SuggestionIsMade = SuggestionIsMade(suggestedSeats.toList(), partyRequested, pricingCategory)
+
+        operator fun invoke(seatingOption: SeatingOption): SuggestionIsMade =
+            invoke(seatingOption.seats(), seatingOption.partyRequested, seatingOption.pricingCategory)
     }
 
-    fun matchExpectation(): Boolean {
-        return suggestedSeats.size == partyRequested
-    }
+    fun seatNames(): List<String> = suggestedSeats.map { it.toString() }
+
+    fun matchExpectation(): Boolean = suggestedSeats.size == partyRequested
 }

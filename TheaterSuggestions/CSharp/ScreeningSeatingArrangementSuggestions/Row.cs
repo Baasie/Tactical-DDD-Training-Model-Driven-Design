@@ -11,19 +11,19 @@ public record Row
         SeatingPlaces = seatingPlaces.ToList().AsReadOnly();
     }
 
-    public SeatingOptionIsSuggested SuggestSeatingOption(int partyRequested, PricingCategory pricingCategory)
+    public SeatingOption SuggestSeatingOption(int partyRequested, PricingCategory pricingCategory)
     {
-        var seatAllocation = new SeatingOptionIsSuggested(partyRequested, pricingCategory);
+        var foundSeats = new List<SeatingPlace>();
 
         foreach (var seat in SeatingPlaces)
         {
             if (seat.IsAvailable() && seat.MatchCategory(pricingCategory))
             {
-                seatAllocation.AddSeat(seat);
+                foundSeats.Add(seat);
 
-                if (seatAllocation.MatchExpectation())
+                if (foundSeats.Count == partyRequested)
                 {
-                    return seatAllocation;
+                    return new SeatingOptionIsSuggested(partyRequested, pricingCategory, foundSeats);
                 }
             }
         }

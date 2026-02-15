@@ -2,29 +2,31 @@ package org.weaveit.seatingplacesuggestions
 
 open class SuggestionsAreMade(
     val showId: String,
-    val partyRequested: Int
+    val partyRequested: Int,
+    suggestions: List<SuggestionIsMade>
 ) {
-    private val forCategory: MutableMap<PricingCategory, MutableList<SuggestionIsMade>> = mutableMapOf()
+    private val forCategory: Map<PricingCategory, List<SuggestionIsMade>> =
+        organizeSuggestionsByCategory(suggestions)
 
-    init {
-        instantiateAnEmptyListForEveryPricingCategory()
+    private fun organizeSuggestionsByCategory(
+        suggestions: List<SuggestionIsMade>
+    ): Map<PricingCategory, List<SuggestionIsMade>> {
+        val result = mutableMapOf<PricingCategory, MutableList<SuggestionIsMade>>()
+
+        for (category in PricingCategory.entries) {
+            result[category] = mutableListOf()
+        }
+
+        for (suggestion in suggestions) {
+            result[suggestion.pricingCategory]!!.add(suggestion)
+        }
+
+        return result.mapValues { it.value.toList() }
     }
 
     fun seatNames(pricingCategory: PricingCategory): List<String> {
         return forCategory[pricingCategory]!!
             .flatMap { it.seatNames() }
-    }
-
-    private fun instantiateAnEmptyListForEveryPricingCategory() {
-        for (pricingCategory in PricingCategory.entries) {
-            forCategory[pricingCategory] = mutableListOf()
-        }
-    }
-
-    fun add(suggestions: Iterable<SuggestionIsMade>) {
-        suggestions.forEach { suggestionIsMade ->
-            forCategory[suggestionIsMade.pricingCategory]!!.add(suggestionIsMade)
-        }
     }
 
     fun matchExpectations(): Boolean {

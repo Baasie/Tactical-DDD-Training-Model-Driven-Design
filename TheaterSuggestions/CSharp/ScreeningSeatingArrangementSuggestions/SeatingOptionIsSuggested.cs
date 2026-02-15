@@ -1,33 +1,43 @@
 namespace SeatsSuggestions;
 
-public class SeatingOptionIsSuggested
+public record SeatingOptionIsSuggested : SeatingOption
 {
-    private readonly PricingCategory _pricingCategory;
-    private readonly List<SeatingPlace> _seats = new();
-    private readonly int _partyRequested;
+    public int PartyRequested { get; }
+    public PricingCategory PricingCategory { get; }
+    private readonly IReadOnlyList<SeatingPlace> _seats;
 
-    public SeatingOptionIsSuggested(int partyRequested, PricingCategory pricingCategory)
+    public SeatingOptionIsSuggested(int partyRequested, PricingCategory pricingCategory, IReadOnlyList<SeatingPlace> seats)
     {
-        _pricingCategory = pricingCategory;
-        _partyRequested = partyRequested;
-    }
-
-    public void AddSeat(SeatingPlace seat)
-    {
-        _seats.Add(seat);
+        PartyRequested = partyRequested;
+        PricingCategory = pricingCategory;
+        _seats = seats.ToList().AsReadOnly();
     }
 
     public bool MatchExpectation()
     {
-        return _seats.Count == _partyRequested;
+        return _seats.Count == PartyRequested;
     }
 
-    public List<SeatingPlace> Seats()
+    public IReadOnlyList<SeatingPlace> Seats() => _seats;
+
+    public virtual bool Equals(SeatingOptionIsSuggested? other)
     {
-        return _seats;
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return PartyRequested == other.PartyRequested
+            && PricingCategory == other.PricingCategory
+            && _seats.SequenceEqual(other._seats);
     }
 
-    public PricingCategory PricingCategory => _pricingCategory;
-
-    public int PartyRequested => _partyRequested;
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(PartyRequested);
+        hash.Add(PricingCategory);
+        foreach (var seat in _seats)
+        {
+            hash.Add(seat);
+        }
+        return hash.ToHashCode();
+    }
 }

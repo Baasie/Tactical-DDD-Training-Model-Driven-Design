@@ -11,12 +11,12 @@ public record AuditoriumSeatingArrangement(Map<String, Row> rows) {
         rows = Collections.unmodifiableMap(new LinkedHashMap<>(rows));
     }
 
-    public SeatingOptionIsSuggested suggestSeatingOptionFor(int partyRequested, PricingCategory pricingCategory) {
+    public SeatingOption suggestSeatingOptionFor(int partyRequested, PricingCategory pricingCategory) {
         for (Row row : rows.values()) {
-            var seatingOptionSuggested = row.suggestSeatingOption(partyRequested, pricingCategory);
+            var seatingOption = row.suggestSeatingOption(partyRequested, pricingCategory);
 
-            if (seatingOptionSuggested.matchExpectation()) {
-                return seatingOptionSuggested;
+            if (seatingOption.matchExpectation()) {
+                return seatingOption;
             }
         }
 

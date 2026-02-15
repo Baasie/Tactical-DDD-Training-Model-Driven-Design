@@ -1,27 +1,51 @@
 namespace SeatsSuggestions;
 
-public class SuggestionIsMade
+public record SuggestionIsMade
 {
-    private readonly List<SeatingPlace> _suggestedSeats;
-    private readonly int _partyRequested;
-    private readonly PricingCategory _pricingCategory;
+    public IReadOnlyList<SeatingPlace> SuggestedSeats { get; }
+    public int PartyRequested { get; }
+    public PricingCategory PricingCategory { get; }
 
-    public SuggestionIsMade(SeatingOptionIsSuggested seatingOptionIsSuggested)
+    public SuggestionIsMade(IReadOnlyList<SeatingPlace> suggestedSeats, int partyRequested, PricingCategory pricingCategory)
     {
-        _suggestedSeats = seatingOptionIsSuggested.Seats();
-        _partyRequested = seatingOptionIsSuggested.PartyRequested;
-        _pricingCategory = seatingOptionIsSuggested.PricingCategory;
+        SuggestedSeats = suggestedSeats.ToList().AsReadOnly();
+        PartyRequested = partyRequested;
+        PricingCategory = pricingCategory;
+    }
+
+    public SuggestionIsMade(SeatingOption seatingOption)
+        : this(seatingOption.Seats(), seatingOption.PartyRequested, seatingOption.PricingCategory)
+    {
     }
 
     public List<string> SeatNames()
     {
-        return _suggestedSeats.Select(s => s.ToString()).ToList();
+        return SuggestedSeats.Select(s => s.ToString()).ToList();
     }
 
     public bool MatchExpectation()
     {
-        return _suggestedSeats.Count == _partyRequested;
+        return SuggestedSeats.Count == PartyRequested;
     }
 
-    public PricingCategory PricingCategory => _pricingCategory;
+    public virtual bool Equals(SuggestionIsMade? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return PartyRequested == other.PartyRequested
+            && PricingCategory == other.PricingCategory
+            && SuggestedSeats.SequenceEqual(other.SuggestedSeats);
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(PartyRequested);
+        hash.Add(PricingCategory);
+        foreach (var seat in SuggestedSeats)
+        {
+            hash.Add(seat);
+        }
+        return hash.ToHashCode();
+    }
 }

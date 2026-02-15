@@ -1,32 +1,19 @@
 package org.weaveit.seatingplacesuggestions;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class SeatingOptionIsSuggested {
+public record SeatingOptionIsSuggested(
+        int partyRequested,
+        PricingCategory pricingCategory,
+        List<SeatingPlace> seats
+) implements SeatingOption {
 
-    private final PricingCategory pricingCategory;
-    private final List<SeatingPlace> seats = new ArrayList<>();
-    private final int partyRequested;
-
-    public SeatingOptionIsSuggested(int partyRequested, PricingCategory pricingCategory) {
-        this.pricingCategory = pricingCategory;
-        this.partyRequested = partyRequested;
+    public SeatingOptionIsSuggested {
+        seats = List.copyOf(seats);
     }
 
-    public void addSeat(SeatingPlace seat) {
-        seats.add(seat);
-    }
-
+    @Override
     public boolean matchExpectation() {
         return seats.size() == partyRequested;
     }
-
-    public List<SeatingPlace> seats() {
-        return seats;
-    }
-
-    public PricingCategory pricingCategory() { return pricingCategory; }
-
-    public int partyRequested() { return partyRequested; }
 }

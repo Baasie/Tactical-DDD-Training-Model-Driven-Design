@@ -1,7 +1,19 @@
 package org.weaveit.seatingplacesuggestions;
 
-public class SeatingOptionIsNotAvailable extends SeatingOptionIsSuggested {
-    public SeatingOptionIsNotAvailable(int partyRequested, PricingCategory pricingCategory) {
-        super(partyRequested, pricingCategory);
+import java.util.List;
+
+public record SeatingOptionIsNotAvailable(
+        int partyRequested,
+        PricingCategory pricingCategory
+) implements SeatingOption {
+
+    @Override
+    public boolean matchExpectation() {
+        return false;
+    }
+
+    @Override
+    public List<SeatingPlace> seats() {
+        return List.of();
     }
 }

@@ -10,12 +10,13 @@ class SeatingArrangementRecommender(
     fun makeSuggestions(showId: String, partyRequested: Int): SuggestionsAreMade {
         val auditoriumSeating = auditoriumSeatingArrangements.findByShowId(showId)
 
-        val suggestionsMade = SuggestionsAreMade(showId, partyRequested)
+        val allSuggestions = mutableListOf<SuggestionIsMade>()
+        allSuggestions.addAll(giveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.FIRST))
+        allSuggestions.addAll(giveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.SECOND))
+        allSuggestions.addAll(giveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.THIRD))
+        allSuggestions.addAll(giveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.MIXED))
 
-        suggestionsMade.add(giveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.FIRST))
-        suggestionsMade.add(giveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.SECOND))
-        suggestionsMade.add(giveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.THIRD))
-        suggestionsMade.add(giveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.MIXED))
+        val suggestionsMade = SuggestionsAreMade(showId, partyRequested, allSuggestions)
 
         if (suggestionsMade.matchExpectations()) {
             return suggestionsMade

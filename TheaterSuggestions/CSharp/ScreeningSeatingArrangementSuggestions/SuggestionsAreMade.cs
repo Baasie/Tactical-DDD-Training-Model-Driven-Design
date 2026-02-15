@@ -4,14 +4,34 @@ public class SuggestionsAreMade
 {
     private readonly string _showId;
     private readonly int _partyRequested;
-    private readonly Dictionary<PricingCategory, List<SuggestionIsMade>> _forCategory = new();
+    private readonly IReadOnlyDictionary<PricingCategory, IReadOnlyList<SuggestionIsMade>> _forCategory;
 
-    public SuggestionsAreMade(string showId, int partyRequested)
+    public SuggestionsAreMade(string showId, int partyRequested, IEnumerable<SuggestionIsMade> suggestions)
     {
         _showId = showId;
         _partyRequested = partyRequested;
+        _forCategory = OrganizeSuggestionsByCategory(suggestions);
+    }
 
-        InstantiateAnEmptyListForEveryPricingCategory();
+    private static IReadOnlyDictionary<PricingCategory, IReadOnlyList<SuggestionIsMade>> OrganizeSuggestionsByCategory(
+        IEnumerable<SuggestionIsMade> suggestions)
+    {
+        var result = new Dictionary<PricingCategory, List<SuggestionIsMade>>();
+
+        foreach (PricingCategory category in Enum.GetValues(typeof(PricingCategory)))
+        {
+            result[category] = new List<SuggestionIsMade>();
+        }
+
+        foreach (var suggestion in suggestions)
+        {
+            result[suggestion.PricingCategory].Add(suggestion);
+        }
+
+        return result.ToDictionary(
+            kvp => kvp.Key,
+            kvp => (IReadOnlyList<SuggestionIsMade>)kvp.Value.AsReadOnly()
+        );
     }
 
     public List<string> SeatNames(PricingCategory pricingCategory)
@@ -19,22 +39,6 @@ public class SuggestionsAreMade
         return _forCategory[pricingCategory]
             .SelectMany(s => s.SeatNames())
             .ToList();
-    }
-
-    private void InstantiateAnEmptyListForEveryPricingCategory()
-    {
-        foreach (PricingCategory pricingCategory in Enum.GetValues(typeof(PricingCategory)))
-        {
-            _forCategory[pricingCategory] = new List<SuggestionIsMade>();
-        }
-    }
-
-    public void Add(IEnumerable<SuggestionIsMade> suggestions)
-    {
-        foreach (var suggestionIsMade in suggestions)
-        {
-            _forCategory[suggestionIsMade.PricingCategory].Add(suggestionIsMade);
-        }
     }
 
     public bool MatchExpectations()

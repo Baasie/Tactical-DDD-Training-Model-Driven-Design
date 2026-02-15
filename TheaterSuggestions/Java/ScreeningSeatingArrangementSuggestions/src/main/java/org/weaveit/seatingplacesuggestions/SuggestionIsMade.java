@@ -2,16 +2,17 @@ package org.weaveit.seatingplacesuggestions;
 
 import java.util.List;
 
-public class SuggestionIsMade {
+public record SuggestionIsMade(
+        List<SeatingPlace> suggestedSeats,
+        int partyRequested,
+        PricingCategory pricingCategory
+) {
+    public SuggestionIsMade {
+        suggestedSeats = List.copyOf(suggestedSeats);
+    }
 
-    private final List<SeatingPlace> suggestedSeats;
-    private final int partyRequested;
-    private final PricingCategory pricingCategory;
-
-    public SuggestionIsMade(SeatingOptionIsSuggested seatingOptionIsSuggested) {
-        this.suggestedSeats = seatingOptionIsSuggested.seats();
-        this.partyRequested = seatingOptionIsSuggested.partyRequested();
-        this.pricingCategory = seatingOptionIsSuggested.pricingCategory();
+    public SuggestionIsMade(SeatingOption seatingOption) {
+        this(seatingOption.seats(), seatingOption.partyRequested(), seatingOption.pricingCategory());
     }
 
     public List<String> seatNames() {
@@ -20,9 +21,5 @@ public class SuggestionIsMade {
 
     public boolean matchExpectation() {
         return suggestedSeats.size() == partyRequested;
-    }
-
-    public PricingCategory pricingCategory() {
-        return pricingCategory;
     }
 }

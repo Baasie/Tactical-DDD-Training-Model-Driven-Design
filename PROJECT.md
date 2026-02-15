@@ -43,7 +43,7 @@ Purpose: Orchestrates the suggestion workflow — makes sure seating place sugge
 **Collaborators:**
 - AuditoriumSeatingArrangements
 - AuditoriumSeatingArrangement
-- SeatingOptionIsSuggested
+- SeatingOption
 - SuggestionsAreMade
 
 ### Auditorium Seating Arrangements
@@ -88,24 +88,37 @@ Purpose: Represents a single row of seats — finds groups of available seats th
 
 **Does:**
 - Find available seats matching a party size and pricing category
-- Return a SeatingOptionIsSuggested or SeatingOptionIsNotAvailable
+- Return a SeatingOption (either SeatingOptionIsSuggested or SeatingOptionIsNotAvailable)
 - Allocate seats (return a new instance with updated seating places)
 
 **Collaborators:**
 - SeatingPlace
-- SeatingOptionIsSuggested
 
-### Seating Option Is Suggested
+### Seating Option
 
-Purpose: Represents a potential seating suggestion being assembled — collects seats from a row that match a party request.
+Purpose: Defines the polymorphic contract for seating suggestions — either a suggestion with seats or a signal that no seats are available.
 
 **Knows:**
 - Its pricing category
 - Its party size requested
-- Its collected seats so far
 
 **Does:**
-- Accumulate matching seats into the suggestion
+- Report whether it matches the party size expectation
+- Return its seats
+
+**Collaborators:**
+- None
+
+### Seating Option Is Suggested
+
+Purpose: Represents a confirmed seating suggestion — holds seats from a row that match a party request.
+
+**Knows:**
+- Its pricing category
+- Its party size requested
+- Its collected seats
+
+**Does:**
 - Check if the collected seats satisfy the party size
 
 **Collaborators:**
@@ -113,10 +126,10 @@ Purpose: Represents a potential seating suggestion being assembled — collects 
 
 ### Seating Option Is Not Available
 
-Purpose: Signals that a row could not satisfy the seating request — acts as a null object for Seating Option Is Suggested.
+Purpose: Signals that a row could not satisfy the seating request — acts as a null object for Seating Option.
 
 **Knows:**
-- The pricing category and party size (inherited, empty seats)
+- The pricing category and party size (empty seats)
 
 **Does:**
 - Signal "no seating option could be found in this row"
@@ -213,3 +226,15 @@ Purpose: Represents the pricing tiers available in an auditorium, including a wi
 
 **Collaborators:**
 - None
+
+## DDD Tactical Patterns
+
+How the domain objects map to DDD tactical patterns:
+
+| Pattern | Objects |
+|---------|---------|
+| **Service** | SeatingArrangementRecommender |
+| **Repository and Factory** | AuditoriumSeatingArrangements |
+| **Aggregate** | AuditoriumSeatingArrangement |
+| **Value Object** | SeatingPlace, Row, SeatingOption, SeatingOptionIsSuggested, SuggestionIsMade, SuggestionsAreMade, PricingCategory, SeatingPlaceAvailability |
+| **Value Object (Null Object)** | SeatingOptionIsNotAvailable, SuggestionsAreNotAvailable |

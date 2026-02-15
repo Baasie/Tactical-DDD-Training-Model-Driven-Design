@@ -217,3 +217,36 @@ Look at the refactored implementation and notice:
 - How the unit tests verify both immutability (allocate returns different instance) and value equality (same data = equal objects)
 - How MIXED works as a wildcard category — `matchCategory()` returns true for any seat when the requested category is MIXED
 - The Recommender no longer needs to directly allocate individual seats — allocation is delegated through AuditoriumSeatingArrangement to Row to SeatingPlace
+
+---
+
+## Lab 2: End — Refactored with DDD Tactical Patterns
+
+This branch represents the completed Lab 2. All domain objects are fully refactored with explicit DDD tactical patterns, sealed types replace inheritance hierarchies, and all value objects are fully immutable.
+
+### What Changed From Green Test
+
+- **`SeatingOption`** introduced as a sealed interface (Java/Kotlin) / interface (C#) — defines the polymorphic contract for seating suggestions, replacing the inheritance relationship between SeatingOptionIsSuggested and SeatingOptionIsNotAvailable
+- **`SeatingOptionIsSuggested`** refactored from mutable class with `addSeat()` to immutable record/data class — seats are passed at construction, not accumulated
+- **`SeatingOptionIsNotAvailable`** no longer inherits from SeatingOptionIsSuggested — now a peer implementing SeatingOption directly
+- **`SuggestionIsMade`** refactored from mutable class to immutable record/data class — accepts SeatingOption interface at construction
+- **`SuggestionsAreMade`** now receives all suggestions at construction instead of via mutable `add()` method
+- **`Row`** and **`AuditoriumSeatingArrangement`** return `SeatingOption` (the interface) instead of concrete `SeatingOptionIsSuggested`
+
+### DDD Tactical Patterns Applied
+
+| Pattern | Objects |
+|---------|---------|
+| **Service** | SeatingArrangementRecommender |
+| **Repository and Factory** | AuditoriumSeatingArrangements |
+| **Aggregate** | AuditoriumSeatingArrangement |
+| **Value Object** | SeatingPlace, Row, SeatingOption, SeatingOptionIsSuggested, SuggestionIsMade, SuggestionsAreMade, PricingCategory, SeatingPlaceAvailability |
+| **Value Object (Null Object)** | SeatingOptionIsNotAvailable, SuggestionsAreNotAvailable |
+
+### What to Review
+
+Look at the completed refactoring and notice:
+- How the sealed interface `SeatingOption` replaced class inheritance with composition — SeatingOptionIsSuggested and SeatingOptionIsNotAvailable are now peers, not parent/child
+- How removing `addSeat()` from SeatingOptionIsSuggested made it a proper Value Object — constructed once, never modified
+- How every object in the domain is now either a Service, Repository, Aggregate, or Value Object — the tactical DDD building blocks
+- How immutability propagates: Row no longer collaborates with SeatingOptionIsSuggested (it just creates it), reducing coupling

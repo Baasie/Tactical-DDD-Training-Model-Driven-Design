@@ -11,15 +11,15 @@ data class Row private constructor(
             Row(name, seatingPlaces.toList())
     }
 
-    fun suggestSeatingOption(partyRequested: Int, pricingCategory: PricingCategory): SeatingOptionIsSuggested {
-        val seatAllocation = SeatingOptionIsSuggested(partyRequested, pricingCategory)
+    fun suggestSeatingOption(partyRequested: Int, pricingCategory: PricingCategory): SeatingOption {
+        val foundSeats = mutableListOf<SeatingPlace>()
 
         for (seat in seatingPlaces) {
             if (seat.isAvailable() && seat.matchCategory(pricingCategory)) {
-                seatAllocation.addSeat(seat)
+                foundSeats.add(seat)
 
-                if (seatAllocation.matchExpectation()) {
-                    return seatAllocation
+                if (foundSeats.size == partyRequested) {
+                    return SeatingOptionIsSuggested(partyRequested, pricingCategory, foundSeats)
                 }
             }
         }

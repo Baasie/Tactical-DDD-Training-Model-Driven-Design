@@ -10,12 +10,12 @@ data class AuditoriumSeatingArrangement private constructor(
             AuditoriumSeatingArrangement(LinkedHashMap(rows))
     }
 
-    fun suggestSeatingOptionFor(partyRequested: Int, pricingCategory: PricingCategory): SeatingOptionIsSuggested {
+    fun suggestSeatingOptionFor(partyRequested: Int, pricingCategory: PricingCategory): SeatingOption {
         for (row in rows.values) {
-            val seatingOptionSuggested = row.suggestSeatingOption(partyRequested, pricingCategory)
+            val seatingOption = row.suggestSeatingOption(partyRequested, pricingCategory)
 
-            if (seatingOptionSuggested.matchExpectation()) {
-                return seatingOptionSuggested
+            if (seatingOption.matchExpectation()) {
+                return seatingOption
             }
         }
 

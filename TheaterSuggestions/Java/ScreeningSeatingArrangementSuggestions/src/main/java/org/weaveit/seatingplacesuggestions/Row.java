@@ -11,15 +11,16 @@ public record Row(String name, List<SeatingPlace> seatingPlaces) {
         seatingPlaces = List.copyOf(seatingPlaces);
     }
 
-    public SeatingOptionIsSuggested suggestSeatingOption(int partyRequested, PricingCategory pricingCategory) {
-        var seatAllocation = new SeatingOptionIsSuggested(partyRequested, pricingCategory);
+    public SeatingOption suggestSeatingOption(int partyRequested, PricingCategory pricingCategory) {
+        var foundSeats = new ArrayList<SeatingPlace>();
 
         for (var seat : seatingPlaces) {
             if (seat.isAvailable() && seat.matchCategory(pricingCategory)) {
-                seatAllocation.addSeat(seat);
+                foundSeats.add(seat);
 
-                if (seatAllocation.matchExpectation())
-                    return seatAllocation;
+                if (foundSeats.size() == partyRequested) {
+                    return new SeatingOptionIsSuggested(partyRequested, pricingCategory, foundSeats);
+                }
             }
         }
         return new SeatingOptionIsNotAvailable(partyRequested, pricingCategory);

@@ -1,20 +1,23 @@
 package org.weaveit.seatingplacesuggestions
 
-open class SeatingOptionIsSuggested(
-    val partyRequested: Int,
-    val pricingCategory: PricingCategory
-) {
-    private val seats: MutableList<SeatingPlace> = mutableListOf()
+data class SeatingOptionIsSuggested private constructor(
+    override val partyRequested: Int,
+    override val pricingCategory: PricingCategory,
+    private val _seats: List<SeatingPlace>
+) : SeatingOption {
 
-    fun addSeat(seat: SeatingPlace) {
-        seats.add(seat)
+    override fun seats(): List<SeatingPlace> = _seats
+
+    companion object {
+        operator fun invoke(
+            partyRequested: Int,
+            pricingCategory: PricingCategory,
+            seats: List<SeatingPlace>
+        ): SeatingOptionIsSuggested =
+            SeatingOptionIsSuggested(partyRequested, pricingCategory, seats.toList())
     }
 
-    fun matchExpectation(): Boolean {
-        return seats.size == partyRequested
-    }
-
-    fun seats(): List<SeatingPlace> {
-        return seats
+    override fun matchExpectation(): Boolean {
+        return _seats.size == partyRequested
     }
 }

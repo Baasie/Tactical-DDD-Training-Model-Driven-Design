@@ -14,16 +14,13 @@ public class SeatingArrangementRecommender {
     public SuggestionsAreMade makeSuggestions(String showId, int partyRequested) {
         var auditoriumSeating = auditoriumSeatingArrangements.findByShowId(showId);
 
-        var suggestionsMade = new SuggestionsAreMade(showId, partyRequested);
+        var allSuggestions = new ArrayList<SuggestionIsMade>();
+        allSuggestions.addAll(giveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.FIRST));
+        allSuggestions.addAll(giveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.SECOND));
+        allSuggestions.addAll(giveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.THIRD));
+        allSuggestions.addAll(giveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.MIXED));
 
-        suggestionsMade.add(giveMeSuggestionsFor(auditoriumSeating, partyRequested,
-                PricingCategory.FIRST));
-        suggestionsMade.add(giveMeSuggestionsFor(auditoriumSeating, partyRequested,
-                PricingCategory.SECOND));
-        suggestionsMade.add(giveMeSuggestionsFor(auditoriumSeating, partyRequested,
-                PricingCategory.THIRD));
-        suggestionsMade.add(giveMeSuggestionsFor(auditoriumSeating, partyRequested,
-                PricingCategory.MIXED));
+        var suggestionsMade = new SuggestionsAreMade(showId, partyRequested, allSuggestions);
 
         if (suggestionsMade.matchExpectations())
             return suggestionsMade;

@@ -1,9 +1,8 @@
 namespace SeatsSuggestions;
 
-public class SeatingOptionIsNotAvailable : SeatingOptionIsSuggested
+public record SeatingOptionIsNotAvailable(int PartyRequested, PricingCategory PricingCategory) : SeatingOption
 {
-    public SeatingOptionIsNotAvailable(int partyRequested, PricingCategory pricingCategory)
-        : base(partyRequested, pricingCategory)
-    {
-    }
+    public bool MatchExpectation() => false;
+
+    public IReadOnlyList<SeatingPlace> Seats() => Array.Empty<SeatingPlace>();
 }

@@ -67,22 +67,23 @@ ReservedSeatsDto GetReservedSeats(string showId)
 
 ---
 
-## Domain Objects (Lab 2 Green Test)
+## Domain Objects (Lab 2 End)
 
 | Object | Description |
 |--------|-------------|
-| `SeatingArrangementRecommender` | Orchestrates 3 suggestions per pricing category including Mixed |
-| `AuditoriumSeatingArrangements` | Anti-corruption layer, converts DTOs to domain objects |
-| `AuditoriumSeatingArrangement` | Immutable record, coordinates seat search, Allocate returns new instance |
-| `Row` | Immutable record, finds available seats, Allocate returns new instance |
-| `SeatingPlace` | Immutable record, Allocate returns new instance with Allocated status |
-| `SeatingPlaceAvailability` | Enum: Available, Reserved, Allocated |
-| `SeatingOptionIsSuggested` | Accumulates matching seats from a row |
-| `SeatingOptionIsNotAvailable` | Null object when row cannot satisfy request |
-| `SuggestionIsMade` | Immutable snapshot of a confirmed suggestion |
-| `SuggestionsAreMade` | Collects suggestions by pricing category |
-| `SuggestionsAreNotAvailable` | Null object when no suggestions could be made |
-| `PricingCategory` | Enum: First, Second, Third, Mixed |
+| `SeatingArrangementRecommender` | Service, orchestrates 3 suggestions per pricing category including Mixed |
+| `AuditoriumSeatingArrangements` | Repository and Factory, anti-corruption layer, converts DTOs to domain objects |
+| `AuditoriumSeatingArrangement` | Aggregate, immutable record, coordinates seat search, Allocate returns new instance |
+| `Row` | Value Object, immutable record, finds available seats, Allocate returns new instance |
+| `SeatingPlace` | Value Object, immutable record, Allocate returns new instance with Allocated status |
+| `SeatingPlaceAvailability` | Value Object, enum: Available, Reserved, Allocated |
+| `SeatingOption` | Value Object, interface defining the polymorphic contract for seating suggestions |
+| `SeatingOptionIsSuggested` | Value Object, immutable record implementing SeatingOption, holds matching seats |
+| `SeatingOptionIsNotAvailable` | Value Object (Null Object), immutable record implementing SeatingOption |
+| `SuggestionIsMade` | Value Object, immutable record, snapshot of a confirmed suggestion |
+| `SuggestionsAreMade` | Value Object, collects suggestions by pricing category |
+| `SuggestionsAreNotAvailable` | Value Object (Null Object), signals no suggestions could be made |
+| `PricingCategory` | Value Object, enum: First, Second, Third, Mixed |
 
 ---
 

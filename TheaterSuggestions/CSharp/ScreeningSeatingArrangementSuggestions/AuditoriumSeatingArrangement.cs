@@ -9,15 +9,15 @@ public record AuditoriumSeatingArrangement
         Rows = new Dictionary<string, Row>(rows);
     }
 
-    public SeatingOptionIsSuggested SuggestSeatingOptionFor(int partyRequested, PricingCategory pricingCategory)
+    public SeatingOption SuggestSeatingOptionFor(int partyRequested, PricingCategory pricingCategory)
     {
         foreach (var row in Rows.Values)
         {
-            var seatingOptionSuggested = row.SuggestSeatingOption(partyRequested, pricingCategory);
+            var seatingOption = row.SuggestSeatingOption(partyRequested, pricingCategory);
 
-            if (seatingOptionSuggested.MatchExpectation())
+            if (seatingOption.MatchExpectation())
             {
-                return seatingOptionSuggested;
+                return seatingOption;
             }
         }
 

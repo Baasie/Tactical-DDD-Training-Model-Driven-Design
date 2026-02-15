@@ -14,12 +14,13 @@ public class SeatingArrangementRecommender
     {
         var auditoriumSeating = _auditoriumSeatingArrangements.FindByShowId(showId);
 
-        var suggestionsMade = new SuggestionsAreMade(showId, partyRequested);
+        var allSuggestions = new List<SuggestionIsMade>();
+        allSuggestions.AddRange(GiveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.First));
+        allSuggestions.AddRange(GiveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.Second));
+        allSuggestions.AddRange(GiveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.Third));
+        allSuggestions.AddRange(GiveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.Mixed));
 
-        suggestionsMade.Add(GiveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.First));
-        suggestionsMade.Add(GiveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.Second));
-        suggestionsMade.Add(GiveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.Third));
-        suggestionsMade.Add(GiveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.Mixed));
+        var suggestionsMade = new SuggestionsAreMade(showId, partyRequested, allSuggestions);
 
         if (suggestionsMade.MatchExpectations())
         {
