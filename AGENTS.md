@@ -30,6 +30,7 @@ Instructions for AI coding agents working on this training project.
 - Don't add patterns or abstractions not required by the current failing test
 - Don't modify files in `ExternalDependencies/` - that module is read-only
 - **Don't immediately solve design problems** - see `TRAINING.md` for lab-specific guidance
+- **Lab 2 Bug Hunt: Do NOT diagnose the root cause.** If the participant asks why the MIXED test fails, guide them through the investigation steps in `TRAINING.md` instead of explaining the answer. Do not suggest immutability, Value Objects, or state mutation as the cause. The learning is in the discovery.
 
 ---
 
@@ -65,9 +66,9 @@ TheaterSuggestions/
 - Letters (A, B, C) = row name
 - Numbers in header = seat number
 
-**Current State (All Tests Green):**
-- All three acceptance tests pass
-- Full implementation covering all pricing categories, no-seats-available case, and multi-seat parties
+**Current State (Lab 2 Begin):**
+- Four acceptance tests, three pass and the fourth has a commented-out MIXED assertion
+- Participants add MIXED to PricingCategory, uncomment the assertion, and investigate the resulting bug
 
 **Domain Objects Implemented:**
 - `SeatingArrangementRecommender` - orchestrates 3 suggestions per pricing category

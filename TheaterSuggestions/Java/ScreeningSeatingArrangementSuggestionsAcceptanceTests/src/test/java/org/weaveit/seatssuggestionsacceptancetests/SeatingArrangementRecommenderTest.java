@@ -65,4 +65,30 @@ class SeatingArrangementRecommenderTest {
 
         assertThat(suggestionsAreMade.seatNames(PricingCategory.SECOND)).containsExactly("A1", "A2", "A9", "A10", "B1", "B2");
     }
+
+
+    @Test
+    void suggest_three_availabilities_per_PricingCategory() throws IOException {
+        // New Amsterdam-18
+        //     1   2   3   4   5   6   7   8   9  10
+        //  A: 2   2   1   1   1   1   1   1   2   2
+        //  B: 2   2   1   1   1   1   1   1   2   2
+        //  C: 2   2   2   2   2   2   2   2   2   2
+        //  D: 2   2   2   2   2   2   2   2   2   2
+        //  E: 3   3   3   3   3   3   3   3   3   3
+        //  F: 3   3   3   3   3   3   3   3   3   3
+        final String showId = "18";
+        final int partyRequested = 1;
+
+        var auditoriumSeatingArrangements =
+                new AuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
+        var seatingArrangementRecommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);
+        var suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested);
+
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.FIRST)).containsExactly("A3","A4","A5");
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.SECOND)).containsExactly("A1", "A2", "A9");
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.THIRD)).containsExactly("E1", "E2", "E3");
+        // assertThat(suggestionsAreMade.seatNames(PricingCategory.MIXED)).containsExactly("A1", "A2", "A3");
+    }
+
 }

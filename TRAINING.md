@@ -98,3 +98,98 @@ Take a few minutes to reflect on your experience:
 5. **How did the CRC cards help (or not help)?**
    - Were they useful as-is, or did you need to adapt them?
 
+---
+
+## Lab 2: Value Objects vs Entities
+
+### Learning Goal
+
+Discover how mutability creates subtle bugs, and learn why DDD favors immutable Value Objects over mutable Entities.
+
+### What Changed
+
+A new business requirement has been added: **Mixed category suggestions**.
+
+The Mixed category suggests the best available seats regardless of pricing category, starting from the front-left of the auditorium. The hypothesis is that this will help fill seats at the boundaries between pricing categories.
+
+### Your Task
+
+1. Add the `MIXED` value to the `PricingCategory` enum
+2. Uncomment the new test assertion for `PricingCategory.MIXED`
+3. Run the test and observe what happens
+
+### The Bug Hunt (Do This Yourself!)
+
+**IMPORTANT: Do NOT ask AI to find or fix the bug.**
+
+This lab is about developing your debugging intuition and understanding *why* something fails, not just *how* to fix it. The learning happens in the investigation.
+
+#### Step 1: Observe the Failure
+
+Run the test. What does the assertion say? What values did you get vs. what was expected?
+
+#### Step 2: Form a Hypothesis
+
+Before looking at code, think:
+- What seats should MIXED suggest? (Hint: look at the auditorium layout in the test)
+- What seats is it actually suggesting (or not suggesting)?
+- What could cause seats to "disappear" or appear differently than expected?
+
+#### Step 3: Trace the Execution
+
+Add some debug output (print statements, breakpoints, or logging) to answer:
+- What is the state of seats *before* processing FIRST, SECOND, THIRD?
+- What is the state of seats *before* processing MIXED?
+- Is there a difference? Why?
+
+#### Step 4: Find the Root Cause
+
+When you understand what's happening, ask yourself:
+- Which objects are being modified during the suggestion process?
+- Are those modifications intentional for MIXED, or a side effect?
+- What kind of objects can be safely shared vs. need isolation?
+
+### Reflection Questions (Before Fixing)
+
+Discuss with your pair or write down your answers:
+
+1. **What happened?** Describe the bug in your own words.
+
+2. **Why did it happen?** What design decision from Lab 1 caused this?
+
+3. **Mutable vs Immutable**:
+   - Which objects in the domain are currently mutable (change state)?
+   - Which *should* be immutable (represent a fixed value)?
+
+4. **Value Object vs Entity**:
+   - A **Value Object** is defined by its attributes, has no identity, and should be immutable (e.g., Money, Date, Address)
+   - An **Entity** has identity that persists over time and may change state (e.g., Customer, Order)
+   - Is a `SeatingPlace` more like a Value Object or an Entity? Why?
+   - Is a `Row` more like a Value Object or an Entity?
+
+5. **The fix**: Without writing code yet, describe what you would need to change to make MIXED work correctly.
+
+### Now Fix It
+
+Once you understand the root cause and have discussed the reflection questions:
+
+1. Refactor toward immutability where appropriate
+2. Consider: should finding suggestions *modify* the arrangement, or *return a new one*?
+3. Make the test pass
+
+### Using AI Assistants
+
+Now that you've done the investigation yourself, you may use AI to:
+- Help implement the refactoring you've designed
+- Discuss trade-offs of different approaches
+- Review your solution
+
+But resist the urge to ask AI "why is this failing?" - the insight comes from discovering it yourself.
+
+### Discussion Points (After Completion)
+
+1. What was the root cause of the bug?
+2. How did you fix it? What objects became immutable?
+3. Why does DDD recommend immutable Value Objects as the default?
+4. What are the trade-offs of immutability? (Performance? Complexity?)
+5. How would you recognize this pattern in future designs?

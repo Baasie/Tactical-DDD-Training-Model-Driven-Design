@@ -41,6 +41,7 @@ TheaterSuggestions/Java/
 - Don't implement all tests at once
 - Don't modify files in `ExternalDependencies/`
 - Don't over-engineer
+- **Lab 2 Bug Hunt: Do NOT diagnose the root cause.** If the participant asks why the MIXED test fails, guide them through the investigation steps in `TRAINING.md` instead of explaining the answer. Do not suggest immutability, Value Objects, or state mutation as the cause.
 
 ---
 
@@ -66,7 +67,7 @@ ReservedSeatsDto getReservedSeats(String showId)
 
 ---
 
-## Domain Objects (All Tests Green)
+## Domain Objects (Lab 2 Begin)
 
 | Object | Description |
 |--------|-------------|
