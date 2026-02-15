@@ -19,6 +19,7 @@ public class SeatingArrangementRecommender
         suggestionsMade.Add(GiveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.First));
         suggestionsMade.Add(GiveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.Second));
         suggestionsMade.Add(GiveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.Third));
+        suggestionsMade.Add(GiveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.Mixed));
 
         if (suggestionsMade.MatchExpectations())
         {
@@ -34,18 +35,15 @@ public class SeatingArrangementRecommender
         PricingCategory pricingCategory)
     {
         var foundedSuggestions = new List<SuggestionIsMade>();
+        var currentArrangement = auditoriumSeatingArrangement;
 
         for (int i = 0; i < NumberOfSuggestions; i++)
         {
-            var seatingOptionSuggested = auditoriumSeatingArrangement.SuggestSeatingOptionFor(partyRequested, pricingCategory);
+            var seatingOptionSuggested = currentArrangement.SuggestSeatingOptionFor(partyRequested, pricingCategory);
 
             if (seatingOptionSuggested.MatchExpectation())
             {
-                foreach (var seatingPlace in seatingOptionSuggested.Seats())
-                {
-                    seatingPlace.Allocate();
-                }
-
+                currentArrangement = currentArrangement.Allocate(seatingOptionSuggested.Seats());
                 foundedSuggestions.Add(new SuggestionIsMade(seatingOptionSuggested));
             }
         }

@@ -193,3 +193,27 @@ But resist the urge to ask AI "why is this failing?" - the insight comes from di
 3. Why does DDD recommend immutable Value Objects as the default?
 4. What are the trade-offs of immutability? (Performance? Complexity?)
 5. How would you recognize this pattern in future designs?
+
+---
+
+## Lab 2: Green Test — MIXED Category Passes
+
+This branch represents the "green" step after fixing the mutation bug. All four acceptance tests pass, including the MIXED pricing category.
+
+### What Changed
+
+- **SeatingPlace** is now an immutable Value Object (Java `record`, C# `record`, Kotlin `data class`). `allocate()` returns a new instance instead of mutating state. `matchCategory()` returns `true` for MIXED.
+- **Row** is now an immutable Value Object. `allocate()` returns a new Row with updated seats. Constructor makes a defensive copy of the seat list.
+- **AuditoriumSeatingArrangement** is now an immutable Value Object. `allocate()` returns a new instance with updated rows.
+- **SeatingArrangementRecommender** processes all four pricing categories (FIRST, SECOND, THIRD, MIXED). Uses local variable reassignment (`currentArrangement = currentArrangement.allocate(...)`) instead of mutating the shared arrangement.
+- **PricingCategory** now includes MIXED.
+- **Unit tests** added for SeatingPlace, Row, and AuditoriumSeatingArrangement to verify immutability and value equality.
+
+### What to Review
+
+Look at the refactored implementation and notice:
+- How `allocate()` methods at every level return new instances — the immutability pattern cascades from SeatingPlace up through Row and AuditoriumSeatingArrangement
+- How the Recommender no longer corrupts shared state — each pricing category gets a fresh arrangement
+- How the unit tests verify both immutability (allocate returns different instance) and value equality (same data = equal objects)
+- How MIXED works as a wildcard category — `matchCategory()` returns true for any seat when the requested category is MIXED
+- The Recommender no longer needs to directly allocate individual seats — allocation is delegated through AuditoriumSeatingArrangement to Row to SeatingPlace

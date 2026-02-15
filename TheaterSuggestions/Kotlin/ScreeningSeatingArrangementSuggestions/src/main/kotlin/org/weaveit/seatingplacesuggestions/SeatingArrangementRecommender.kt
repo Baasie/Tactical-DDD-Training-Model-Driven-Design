@@ -15,6 +15,7 @@ class SeatingArrangementRecommender(
         suggestionsMade.add(giveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.FIRST))
         suggestionsMade.add(giveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.SECOND))
         suggestionsMade.add(giveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.THIRD))
+        suggestionsMade.add(giveMeSuggestionsFor(auditoriumSeating, partyRequested, PricingCategory.MIXED))
 
         if (suggestionsMade.matchExpectations()) {
             return suggestionsMade
@@ -29,15 +30,13 @@ class SeatingArrangementRecommender(
         pricingCategory: PricingCategory
     ): List<SuggestionIsMade> {
         val foundedSuggestions = mutableListOf<SuggestionIsMade>()
+        var currentArrangement = auditoriumSeatingArrangement
 
         for (i in 0 until NUMBER_OF_SUGGESTIONS) {
-            val seatingOptionSuggested = auditoriumSeatingArrangement.suggestSeatingOptionFor(partyRequested, pricingCategory)
+            val seatingOptionSuggested = currentArrangement.suggestSeatingOptionFor(partyRequested, pricingCategory)
 
             if (seatingOptionSuggested.matchExpectation()) {
-                for (seatingPlace in seatingOptionSuggested.seats()) {
-                    seatingPlace.allocate()
-                }
-
+                currentArrangement = currentArrangement.allocate(seatingOptionSuggested.seats())
                 foundedSuggestions.add(SuggestionIsMade(seatingOptionSuggested))
             }
         }

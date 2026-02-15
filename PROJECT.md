@@ -44,7 +44,6 @@ Purpose: Orchestrates the suggestion workflow — makes sure seating place sugge
 - AuditoriumSeatingArrangements
 - AuditoriumSeatingArrangement
 - SeatingOptionIsSuggested
-- SeatingPlace
 - SuggestionsAreMade
 
 ### Auditorium Seating Arrangements
@@ -74,6 +73,7 @@ Purpose: Represents the full seating layout of an auditorium — coordinates the
 **Does:**
 - Delegate seat suggestion requests to rows in order
 - Return the first matching seating option from any row
+- Allocate seats across rows (return a new instance with updated rows)
 
 **Collaborators:**
 - Row
@@ -89,6 +89,7 @@ Purpose: Represents a single row of seats — finds groups of available seats th
 **Does:**
 - Find available seats matching a party size and pricing category
 - Return a SeatingOptionIsSuggested or SeatingOptionIsNotAvailable
+- Allocate seats (return a new instance with updated seating places)
 
 **Collaborators:**
 - SeatingPlace
@@ -135,7 +136,7 @@ Purpose: Represents a single seat in the auditorium — knows its identity, cate
 **Does:**
 - Report whether it is available
 - Match itself against a requested pricing category
-- Allocate itself (transition from available to allocated)
+- Allocate itself (return a new instance with allocated status)
 - Generate its display name (e.g. "A3")
 
 **Collaborators:**
@@ -201,11 +202,11 @@ Purpose: Signals that no valid suggestions could be made for the entire request 
 
 ### Pricing Category
 
-Purpose: Represents the three pricing tiers available in an auditorium.
+Purpose: Represents the pricing tiers available in an auditorium, including a wildcard category for mixed suggestions.
 
 **Knows:**
-- Its numeric value (1, 2, or 3)
-- The three categories: FIRST, SECOND, THIRD
+- Its numeric value (1, 2, 3, or 4)
+- The four categories: FIRST, SECOND, THIRD, MIXED
 
 **Does:**
 - Convert from integer value (1, 2, 3) to enum constant

@@ -3,7 +3,8 @@ package org.weaveit.seatingplacesuggestions
 enum class PricingCategory(val value: Int) {
     FIRST(1),
     SECOND(2),
-    THIRD(3);
+    THIRD(3),
+    MIXED(4);
 
     companion object {
         private val map = entries.associateBy { it.value }

@@ -1,40 +1,36 @@
 namespace SeatsSuggestions;
 
-public class SeatingPlace
+public record SeatingPlace(
+    string RowName,
+    int Number,
+    PricingCategory PricingCategory,
+    SeatingPlaceAvailability SeatingPlaceAvailability
+)
 {
-    private readonly string _rowName;
-    private readonly int _number;
-    private readonly PricingCategory _pricingCategory;
-    private SeatingPlaceAvailability _seatingPlaceAvailability;
-
-    public SeatingPlace(string rowName, int number, PricingCategory pricingCategory, SeatingPlaceAvailability seatingPlaceAvailability)
-    {
-        _rowName = rowName;
-        _number = number;
-        _pricingCategory = pricingCategory;
-        _seatingPlaceAvailability = seatingPlaceAvailability;
-    }
-
     public bool IsAvailable()
     {
-        return _seatingPlaceAvailability == SeatingPlaceAvailability.Available;
+        return SeatingPlaceAvailability == SeatingPlaceAvailability.Available;
     }
 
     public bool MatchCategory(PricingCategory pricingCategory)
     {
-        return _pricingCategory == pricingCategory;
-    }
-
-    public void Allocate()
-    {
-        if (_seatingPlaceAvailability == SeatingPlaceAvailability.Available)
+        if (pricingCategory == PricingCategory.Mixed)
         {
-            _seatingPlaceAvailability = SeatingPlaceAvailability.Allocated;
+            return true;
         }
+        return PricingCategory == pricingCategory;
     }
 
-    public override string ToString()
+    public SeatingPlace Allocate()
     {
-        return $"{_rowName}{_number}";
+        if (SeatingPlaceAvailability == SeatingPlaceAvailability.Available)
+        {
+            return this with { SeatingPlaceAvailability = SeatingPlaceAvailability.Allocated };
+        }
+        return this;
     }
+
+    public string Name => $"{RowName}{Number}";
+
+    public override string ToString() => Name;
 }

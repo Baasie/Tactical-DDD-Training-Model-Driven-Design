@@ -1,26 +1,31 @@
 package org.weaveit.seatingplacesuggestions
 
-class SeatingPlace(
-    private val rowName: String,
-    private val number: Int,
-    private val pricingCategory: PricingCategory,
-    private var seatingPlaceAvailability: SeatingPlaceAvailability
+data class SeatingPlace(
+    val rowName: String,
+    val number: Int,
+    val pricingCategory: PricingCategory,
+    val seatingPlaceAvailability: SeatingPlaceAvailability
 ) {
     fun isAvailable(): Boolean {
         return seatingPlaceAvailability == SeatingPlaceAvailability.AVAILABLE
     }
 
     fun matchCategory(pricingCategory: PricingCategory): Boolean {
+        if (pricingCategory == PricingCategory.MIXED) {
+            return true
+        }
         return this.pricingCategory == pricingCategory
     }
 
-    fun allocate() {
-        if (seatingPlaceAvailability == SeatingPlaceAvailability.AVAILABLE) {
-            seatingPlaceAvailability = SeatingPlaceAvailability.ALLOCATED
+    fun allocate(): SeatingPlace {
+        return if (seatingPlaceAvailability == SeatingPlaceAvailability.AVAILABLE) {
+            copy(seatingPlaceAvailability = SeatingPlaceAvailability.ALLOCATED)
+        } else {
+            this
         }
     }
 
-    override fun toString(): String {
-        return "$rowName$number"
-    }
+    fun name(): String = "$rowName$number"
+
+    override fun toString(): String = name()
 }

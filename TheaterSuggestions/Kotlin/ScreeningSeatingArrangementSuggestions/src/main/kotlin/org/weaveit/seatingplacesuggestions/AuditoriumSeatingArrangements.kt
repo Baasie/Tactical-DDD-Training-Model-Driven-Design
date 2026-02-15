@@ -37,7 +37,7 @@ class AuditoriumSeatingArrangements(
                 )
             }
 
-            rows[rowName] = Row(rowName, seats)
+            rows[rowName] = Row(rowName, seats.toList())
         }
 
         return AuditoriumSeatingArrangement(rows)

@@ -22,6 +22,8 @@ public class SeatingArrangementRecommender {
                 PricingCategory.SECOND));
         suggestionsMade.add(giveMeSuggestionsFor(auditoriumSeating, partyRequested,
                 PricingCategory.THIRD));
+        suggestionsMade.add(giveMeSuggestionsFor(auditoriumSeating, partyRequested,
+                PricingCategory.MIXED));
 
         if (suggestionsMade.matchExpectations())
             return suggestionsMade;
@@ -32,15 +34,13 @@ public class SeatingArrangementRecommender {
     private static List<SuggestionIsMade> giveMeSuggestionsFor(
             AuditoriumSeatingArrangement auditoriumSeatingArrangement, int partyRequested, PricingCategory pricingCategory) {
         var foundedSuggestions = new ArrayList<SuggestionIsMade>();
+        var currentArrangement = auditoriumSeatingArrangement;
 
         for (int i = 0; i < NUMBER_OF_SUGGESTIONS; i++) {
-            var seatingOptionSuggested = auditoriumSeatingArrangement.suggestSeatingOptionFor(partyRequested, pricingCategory);
+            var seatingOptionSuggested = currentArrangement.suggestSeatingOptionFor(partyRequested, pricingCategory);
 
             if (seatingOptionSuggested.matchExpectation()) {
-                for (var seatingPlace : seatingOptionSuggested.seats()) {
-                    seatingPlace.allocate();
-                }
-
+                currentArrangement = currentArrangement.allocate(seatingOptionSuggested.seats());
                 foundedSuggestions.add(new SuggestionIsMade(seatingOptionSuggested));
             }
         }

@@ -7,7 +7,9 @@ import java.util.stream.Stream;
 public enum PricingCategory {
     FIRST(1),
     SECOND(2),
-    THIRD(3);
+    THIRD(3),
+    MIXED(4);
+
 
     private final int value;
     private static final Map<Integer, PricingCategory> map;

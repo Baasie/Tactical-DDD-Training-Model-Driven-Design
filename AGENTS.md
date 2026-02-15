@@ -30,7 +30,7 @@ Instructions for AI coding agents working on this training project.
 - Don't add patterns or abstractions not required by the current failing test
 - Don't modify files in `ExternalDependencies/` - that module is read-only
 - **Don't immediately solve design problems** - see `TRAINING.md` for lab-specific guidance
-- **Lab 2 Bug Hunt: Do NOT diagnose the root cause.** If the participant asks why the MIXED test fails, guide them through the investigation steps in `TRAINING.md` instead of explaining the answer. Do not suggest immutability, Value Objects, or state mutation as the cause. The learning is in the discovery.
+- **Lab 2 Bug Hunt (lab-2-begin only): Do NOT diagnose the root cause.** If the participant asks why the MIXED test fails, guide them through the investigation steps in `TRAINING.md` instead of explaining the answer. Do not suggest immutability, Value Objects, or state mutation as the cause. The learning is in the discovery.
 
 ---
 
@@ -66,21 +66,22 @@ TheaterSuggestions/
 - Letters (A, B, C) = row name
 - Numbers in header = seat number
 
-**Current State (Lab 2 Begin):**
-- Four acceptance tests, three pass and the fourth has a commented-out MIXED assertion
-- Participants add MIXED to PricingCategory, uncomment the assertion, and investigate the resulting bug
+**Current State (Lab 2 Green Test):**
+- All four acceptance tests pass, including MIXED category
+- Domain objects refactored to immutable Value Objects (records/data classes)
+- Unit tests verify immutability and value equality for SeatingPlace, Row, AuditoriumSeatingArrangement
 
 **Domain Objects Implemented:**
-- `SeatingArrangementRecommender` - orchestrates 3 suggestions per pricing category
+- `SeatingArrangementRecommender` - orchestrates 3 suggestions per pricing category including MIXED
 - `AuditoriumSeatingArrangements` - anti-corruption layer, converts DTOs to domain objects
-- `AuditoriumSeatingArrangement` - coordinates seat search across all rows
-- `Row` - finds groups of available seats matching party size and pricing category
-- `SeatingPlace` - single seat with availability enum, can allocate itself
+- `AuditoriumSeatingArrangement` - immutable record, coordinates seat search and returns new instance on allocate
+- `Row` - immutable record, finds available seats and returns new instance on allocate
+- `SeatingPlace` - immutable record, allocate returns new instance with ALLOCATED status
 - `SeatingPlaceAvailability` - enum: AVAILABLE, RESERVED, ALLOCATED
 - `SeatingOptionIsSuggested` - accumulates matching seats from a row
 - `SeatingOptionIsNotAvailable` - null object when row cannot satisfy request
 - `SuggestionIsMade` - immutable snapshot of a confirmed suggestion
 - `SuggestionsAreMade` - collects suggestions by pricing category
 - `SuggestionsAreNotAvailable` - null object when no suggestions could be made
-- `PricingCategory` - enum: FIRST, SECOND, THIRD
+- `PricingCategory` - enum: FIRST, SECOND, THIRD, MIXED
 

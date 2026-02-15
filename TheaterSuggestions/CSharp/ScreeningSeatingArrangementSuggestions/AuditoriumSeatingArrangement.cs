@@ -1,17 +1,17 @@
 namespace SeatsSuggestions;
 
-public class AuditoriumSeatingArrangement
+public record AuditoriumSeatingArrangement
 {
-    private readonly Dictionary<string, Row> _rows;
+    public IReadOnlyDictionary<string, Row> Rows { get; }
 
-    public AuditoriumSeatingArrangement(Dictionary<string, Row> rows)
+    public AuditoriumSeatingArrangement(IDictionary<string, Row> rows)
     {
-        _rows = rows;
+        Rows = new Dictionary<string, Row>(rows);
     }
 
     public SeatingOptionIsSuggested SuggestSeatingOptionFor(int partyRequested, PricingCategory pricingCategory)
     {
-        foreach (var row in _rows.Values)
+        foreach (var row in Rows.Values)
         {
             var seatingOptionSuggested = row.SuggestSeatingOption(partyRequested, pricingCategory);
 
@@ -22,5 +22,42 @@ public class AuditoriumSeatingArrangement
         }
 
         return new SeatingOptionIsNotAvailable(partyRequested, pricingCategory);
+    }
+
+    public AuditoriumSeatingArrangement Allocate(IReadOnlyList<SeatingPlace> seatsToAllocate)
+    {
+        var updatedRows = new Dictionary<string, Row>();
+        foreach (var (key, row) in Rows)
+        {
+            updatedRows[key] = row.Allocate(seatsToAllocate);
+        }
+        return new AuditoriumSeatingArrangement(updatedRows);
+    }
+
+    public virtual bool Equals(AuditoriumSeatingArrangement? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        if (Rows.Count != other.Rows.Count) return false;
+
+        foreach (var (key, value) in Rows)
+        {
+            if (!other.Rows.TryGetValue(key, out var otherValue) || !value.Equals(otherValue))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        foreach (var (key, value) in Rows.OrderBy(kv => kv.Key))
+        {
+            hash.Add(key);
+            hash.Add(value);
+        }
+        return hash.ToHashCode();
     }
 }

@@ -1,21 +1,21 @@
 namespace SeatsSuggestions;
 
-public class Row
+public record Row
 {
-    private readonly string _name;
-    private readonly List<SeatingPlace> _seatingPlaces;
+    public string Name { get; }
+    public IReadOnlyList<SeatingPlace> SeatingPlaces { get; }
 
-    public Row(string name, List<SeatingPlace> seatingPlaces)
+    public Row(string name, IReadOnlyList<SeatingPlace> seatingPlaces)
     {
-        _name = name;
-        _seatingPlaces = seatingPlaces;
+        Name = name;
+        SeatingPlaces = seatingPlaces.ToList().AsReadOnly();
     }
 
     public SeatingOptionIsSuggested SuggestSeatingOption(int partyRequested, PricingCategory pricingCategory)
     {
         var seatAllocation = new SeatingOptionIsSuggested(partyRequested, pricingCategory);
 
-        foreach (var seat in _seatingPlaces)
+        foreach (var seat in SeatingPlaces)
         {
             if (seat.IsAvailable() && seat.MatchCategory(pricingCategory))
             {
@@ -29,5 +29,34 @@ public class Row
         }
 
         return new SeatingOptionIsNotAvailable(partyRequested, pricingCategory);
+    }
+
+    public Row Allocate(IReadOnlyList<SeatingPlace> seatsToAllocate)
+    {
+        var seatNamesToAllocate = seatsToAllocate.Select(s => s.Name).ToHashSet();
+
+        var updatedSeats = SeatingPlaces.Select(seat =>
+            seatNamesToAllocate.Contains(seat.Name) ? seat.Allocate() : seat
+        ).ToList();
+
+        return new Row(Name, updatedSeats);
+    }
+
+    public virtual bool Equals(Row? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return Name == other.Name && SeatingPlaces.SequenceEqual(other.SeatingPlaces);
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(Name);
+        foreach (var seat in SeatingPlaces)
+        {
+            hash.Add(seat);
+        }
+        return hash.ToHashCode();
     }
 }
