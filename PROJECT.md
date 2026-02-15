@@ -43,8 +43,7 @@ Purpose: Orchestrates the suggestion workflow — makes sure seating place sugge
 **Collaborators:**
 - AuditoriumSeatingArrangements
 - AuditoriumSeatingArrangement
-- Pricing Category
-- Suggestion Is Made
+- Suggestion Are Made
 
 ### Auditorium Seating Arrangements
 
@@ -62,7 +61,6 @@ Purpose: Acts as the anti-corruption layer — fetches external data (layout + r
 **Collaborators:**
 - AuditoriumLayoutRepository (external)
 - ReservationsProvider (external)
-- AuditoriumSeatingArrangement
 
 ### Auditorium Seating Arrangement
 
@@ -77,8 +75,6 @@ Purpose: Represents the full seating layout of an auditorium — coordinates the
 
 **Collaborators:**
 - Row
-- SeatingOptionIsSuggested
-- SeatingOptionIsNotAvailable
 
 ### Row
 
@@ -94,8 +90,6 @@ Purpose: Represents a single row of seats — finds groups of available seats th
 
 **Collaborators:**
 - SeatingPlace
-- SeatingOptionIsSuggested
-- SeatingOptionIsNotAvailable
 
 ### Seating Place
 
@@ -113,8 +107,7 @@ Purpose: Represents a single seat in the auditorium — knows its identity, cate
 - Generate its display name (e.g. "A3")
 
 **Collaborators:**
-- PricingCategory
-- SeatingPlaceAvailability
+- None
 
 ### Seating Place Availability
 
@@ -143,8 +136,7 @@ Purpose: Holds the complete set of suggestions for a show request — organizes 
 - Check if any suggestion across all categories matched expectations
 
 **Collaborators:**
-- SuggestionIsMade
-- PricingCategory
+- None
 
 ### Suggestions Are Not Available
 
