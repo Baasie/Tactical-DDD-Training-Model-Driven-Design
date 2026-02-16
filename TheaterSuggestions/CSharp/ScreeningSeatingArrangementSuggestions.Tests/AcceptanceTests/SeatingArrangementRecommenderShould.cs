@@ -98,7 +98,7 @@ namespace SeatsSuggestions.Tests.AcceptanceTests
 
         
         [Test]
-        public void Should_offer_adjacent_seats_nearer_the_middle_of_a_row()
+        public void Should_offer_seats_nearer_the_middle_of_a_row()
         {
             // Mogador Auditorium-9
             //

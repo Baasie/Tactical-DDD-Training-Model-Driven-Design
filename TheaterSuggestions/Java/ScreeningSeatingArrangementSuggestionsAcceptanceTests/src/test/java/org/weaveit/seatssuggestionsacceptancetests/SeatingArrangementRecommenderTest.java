@@ -93,7 +93,7 @@ class SeatingArrangementRecommenderTest {
     }
 
     @Test
-    public void should_offer_adjacent_seats_nearer_the_middle_of_a_row() throws IOException {
+    public void should_offer_seats_nearer_the_middle_of_a_row() throws IOException {
         // Mogador Auditorium-9
         //
         //    1   2   3   4   5   6   7   8   9  10
