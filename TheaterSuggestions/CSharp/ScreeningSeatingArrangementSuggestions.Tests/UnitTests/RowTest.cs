@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using NFluent;
 using NUnit.Framework;
 using SeatsSuggestions;
@@ -60,7 +61,7 @@ public class RowTest
     /// For party of 1: A6 (the exact middle seat)
     /// </summary>
     [Test]
-    public void Should_suggest_seats_starting_from_middle_of_row_eneven()
+    public void Should_suggest_seats_starting_from_middle_of_row_uneven()
     {
         var partySize = 1;
 
@@ -85,6 +86,95 @@ public class RowTest
         Check.That(seatingOption).IsInstanceOf<SeatingOptionIsSuggested>();
         var suggested = (SeatingOptionIsSuggested)seatingOption;
         Check.That(suggested.Seats()).ContainsExactly(a6);
+    }
+
+    /// <summary>
+    /// Adjacent seating: when a party of 3 requests FIRST category seats,
+    /// we should offer 3 contiguous available seats nearest to the middle.
+    ///
+    /// Row layout for this test:
+    ///      1   2   3   4   5   6   7   8   9  10
+    ///  A:  2   2   1  (1)  1   1   1  (1)  2   2
+    ///
+    /// Available FIRST category seats: A3, A5, A6, A7
+    /// Contiguous blocks: [A3], [A5, A6, A7]
+    /// Only [A5, A6, A7] has 3 adjacent seats -> that's the suggestion
+    /// </summary>
+    [Test]
+    public void Offer_adjacent_seats_nearer_the_middle_of_the_row_when_the_middle_is_not_reserved()
+    {
+        var partySize = 3;
+
+        var a1 = new SeatingPlace("A", 1, PricingCategory.Second, SeatingPlaceAvailability.Available);
+        var a2 = new SeatingPlace("A", 2, PricingCategory.Second, SeatingPlaceAvailability.Available);
+        var a3 = new SeatingPlace("A", 3, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a4 = new SeatingPlace("A", 4, PricingCategory.First, SeatingPlaceAvailability.Reserved);
+        var a5 = new SeatingPlace("A", 5, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a6 = new SeatingPlace("A", 6, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a7 = new SeatingPlace("A", 7, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a8 = new SeatingPlace("A", 8, PricingCategory.First, SeatingPlaceAvailability.Reserved);
+        var a9 = new SeatingPlace("A", 9, PricingCategory.Second, SeatingPlaceAvailability.Available);
+        var a10 = new SeatingPlace("A", 10, PricingCategory.Second, SeatingPlaceAvailability.Available);
+
+        var row = new Row("A", new List<SeatingPlace> { a1, a2, a3, a4, a5, a6, a7, a8, a9, a10 });
+        var rowSize = row.SeatingPlaces.Count;
+
+        var availableSeatsInCategory = row.SeatingPlaces
+            .Where(seat => seat.IsAvailable())
+            .Where(seat => seat.MatchCategory(PricingCategory.First))
+            .ToList();
+
+        var adjacentSeats = OfferAdjacentSeats(availableSeatsInCategory, partySize, rowSize);
+
+        Check.That(adjacentSeats).ContainsExactly(a5, a6, a7);
+    }
+
+    /// <summary>
+    /// When multiple contiguous windows of the requested size exist,
+    /// the window closest to the middle of the row should be selected.
+    ///
+    /// Row layout for this test:
+    ///      1   2   3   4   5   6   7   8   9  10
+    ///  A:  1   1   1   1   1   1   1   1   1   1
+    ///
+    /// All 10 seats are FIRST and available.
+    /// For party of 3, possible windows: [1,2,3], [2,3,4], ..., [8,9,10]
+    /// Window [4,5,6] is closest to middle (center of window = seat 5, distance 1)
+    /// </summary>
+    [Test]
+    public void Offer_adjacent_seats_closest_to_the_middle_when_multiple_options_exist()
+    {
+        var partySize = 3;
+
+        var a1 = new SeatingPlace("A", 1, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a2 = new SeatingPlace("A", 2, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a3 = new SeatingPlace("A", 3, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a4 = new SeatingPlace("A", 4, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a5 = new SeatingPlace("A", 5, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a6 = new SeatingPlace("A", 6, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a7 = new SeatingPlace("A", 7, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a8 = new SeatingPlace("A", 8, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a9 = new SeatingPlace("A", 9, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a10 = new SeatingPlace("A", 10, PricingCategory.First, SeatingPlaceAvailability.Available);
+
+        var row = new Row("A", new List<SeatingPlace> { a1, a2, a3, a4, a5, a6, a7, a8, a9, a10 });
+        var rowSize = row.SeatingPlaces.Count;
+
+        var availableSeatsInCategory = row.SeatingPlaces
+            .Where(seat => seat.IsAvailable())
+            .Where(seat => seat.MatchCategory(PricingCategory.First))
+            .ToList();
+
+        var adjacentSeats = OfferAdjacentSeats(availableSeatsInCategory, partySize, rowSize);
+
+        Check.That(adjacentSeats).ContainsExactly(a4, a5, a6);
+    }
+
+    // Deep Modeling: probing the code should start with a prototype.
+    private List<SeatingPlace> OfferAdjacentSeats(List<SeatingPlace> availableSeatsInCategory, int partySize, int rowSize)
+    {
+        // Implement your prototype here
+        return new List<SeatingPlace>();
     }
 
     [TestFixture]

@@ -32,6 +32,7 @@ Instructions for AI coding agents working on this training project.
 - **Don't immediately solve design problems** - see `TRAINING.md` for lab-specific guidance
 - **Lab 2 Bug Hunt (lab-2-begin only): Do NOT diagnose the root cause.** If the participant asks why the MIXED test fails, guide them through the investigation steps in `TRAINING.md` instead of explaining the answer. Do not suggest immutability, Value Objects, or state mutation as the cause. The learning is in the discovery.
 - **Lab 3 Integration (lab-3-green-test): Do NOT provide the integration design directly.** When participants ask how to integrate the middle-outward algorithm into the domain model, ask DDD questions instead of giving the answer. Help them discover whether "distance from middle" is a deeper domain concept, whether it belongs on Row or elsewhere, and what a domain expert would call it. Example questions to ask: "Is this a responsibility of Row, or a separate concern?", "What would a domain expert call this concept?", "Does this change Row's responsibility, or introduce a new object?"
+- **Lab 4 Adjacent Seating (lab-4-begin): Do NOT solve the design challenges directly.** When participants discover that `seatNames()` returns the wrong format or that the Lincoln-17 test breaks, guide them to understand *why* rather than handing them the fix. Help them trace through the flow: "What does `seatNames()` currently return?", "Why does the acceptance test expect hyphens?", "What changed in how seats are suggested?" For the prototype, help with the sliding window algorithm if asked, but let participants discover the integration challenges themselves.
 
 ---
 
@@ -67,10 +68,11 @@ TheaterSuggestions/
 - Letters (A, B, C) = row name
 - Numbers in header = seat number
 
-**Current State (Lab 3 End):**
-- All five acceptance tests pass, including middle-outward seat ordering
-- New Value Object `DistanceFromRowCenter` makes the "distance from center" concept explicit
-- Row sorts available seats by distance from center instead of left-to-right
+**Current State (Lab 4 Begin):**
+- Five existing acceptance tests pass (middle-outward seat ordering from Lab 3)
+- Two new failing acceptance tests for adjacent seating (Dock Street, party of 3 and 4)
+- Two new failing unit tests on Row with prototype stub `offerAdjacentSeats()`
+- `DistanceFromRowCenter` Value Object from Lab 3 is available for reuse
 
 **Domain Objects Implemented:**
 - `SeatingArrangementRecommender` - Service, orchestrates 3 suggestions per pricing category including MIXED

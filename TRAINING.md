@@ -377,3 +377,55 @@ Look at the completed integration and notice:
 2. Could the same deep modeling approach reveal other hidden concepts in your own projects?
 3. How did prototyping outside the model help you avoid retrofit bias?
 4. What would happen if the business wanted different ordering rules for different auditoriums?
+
+---
+
+## Lab 4: Adjacent Seating
+
+### Learning Goal
+
+Continue deep modeling by prototyping a more complex algorithm: finding groups of contiguous seats nearest to the center of a row. This builds on Lab 3's deep modeling practice with a requirement that challenges the current model more fundamentally.
+
+### What Changed
+
+A new business requirement has been added: **When a party requests multiple seats, they should be seated together in adjacent (contiguous) seats.** The group of adjacent seats closest to the middle of the row should be preferred.
+
+New failing tests have been added:
+
+1. **Acceptance tests** — Two new tests using the Dock Street Auditorium (show ID "3"):
+   - Party of 4: expects groups like `"C5-C6-C7-C8"` (hyphenated format for adjacent seats)
+   - Party of 3: expects groups like `"A6-A7-A8"`
+
+2. **Row unit tests** — Two prototype tests with a stub method `offerAdjacentSeats()`:
+   - **Single valid block**: only one contiguous group of the right size exists — forces you to find contiguous windows
+   - **Multiple valid blocks**: all seats are available, so many windows of the right size exist — forces you to rank windows by proximity to center
+
+### Your Task
+
+1. Start with the **unit tests**, not the acceptance tests
+2. Implement the `offerAdjacentSeats()` prototype method:
+   - Find all contiguous windows of available seats of the requested size
+   - Select the window closest to the center of the row
+3. Get both unit tests green
+4. Then think about integration:
+   - How does `offerAdjacentSeats()` relate to Row's existing `suggestSeatingOption()`?
+   - Does `suggestSeatingOption()` need to change, or should a new method emerge?
+   - What happens to seat name formatting when seats are suggested as a group?
+
+### The Design Challenges
+
+This lab surfaces several design tensions:
+
+1. **Algorithm change**: The current `suggestSeatingOption()` picks the N closest individual seats. Adjacent seating requires finding contiguous windows — a fundamentally different algorithm. How should these two behaviours coexist?
+
+2. **Output format change**: The acceptance tests expect hyphenated seat names for groups (e.g., `"A5-A6-A7"` instead of separate `"A5"`, `"A6"`, `"A7"`). This means `SuggestionIsMade.seatNames()` needs to change. Discover what needs to change and where.
+
+3. **Breaking existing tests**: When you integrate adjacent seating into the domain model, the Lincoln-17 (party=2) acceptance test will break. The current test expects individual seat names, but the adjacent algorithm will return grouped names. Think about why and how to fix the expectations.
+
+### Using AI Assistants
+
+You may use AI to help implement the prototype algorithm. Consider:
+- Ask AI to help with the sliding window algorithm in the prototype
+- Discuss how contiguous seat selection differs from individual seat selection
+- Use AI to help trace through the Dock Street auditorium data to verify your algorithm
+- When integrating, discuss with AI where the adjacent logic should live in the domain model

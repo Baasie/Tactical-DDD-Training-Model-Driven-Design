@@ -63,7 +63,7 @@ class RowTest {
      * For party of 1: A6 (the exact middle seat)
      */
     @Test
-    public void should_suggest_seats_starting_from_middle_of_row_eneven() {
+    public void should_suggest_seats_starting_from_middle_of_row_uneven() {
         int partySize = 1;
 
         // Row with 11 seats - middle is seat 6
@@ -87,6 +87,92 @@ class RowTest {
         assertThat(seatingOption).isInstanceOf(SeatingOptionIsSuggested.class);
         var suggested = (SeatingOptionIsSuggested) seatingOption;
         assertThat(suggested.seats()).containsExactly(a6);
+    }
+
+    /**
+     * Adjacent seating: when a party of 3 requests FIRST category seats,
+     * we should offer 3 contiguous available seats nearest to the middle.
+     *
+     * Row layout for this test:
+     *      1   2   3   4   5   6   7   8   9  10
+     *  A:  2   2   1  (1)  1   1   1  (1)  2   2
+     *
+     * Available FIRST category seats: A3, A5, A6, A7
+     * Contiguous blocks: [A3], [A5, A6, A7]
+     * Only [A5, A6, A7] has 3 adjacent seats -> that's the suggestion
+     */
+    @Test
+    public void Offer_adjacent_seats_nearer_the_middle_of_the_row_when_the_middle_is_not_reserved() {
+        int partySize = 3;
+
+        SeatingPlace a1 = new SeatingPlace("A", 1, PricingCategory.SECOND, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a2 = new SeatingPlace("A", 2, PricingCategory.SECOND, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a3 = new SeatingPlace("A", 3, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a4 = new SeatingPlace("A", 4, PricingCategory.FIRST, SeatingPlaceAvailability.RESERVED);
+        SeatingPlace a5 = new SeatingPlace("A", 5, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a6 = new SeatingPlace("A", 6, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a7 = new SeatingPlace("A", 7, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a8 = new SeatingPlace("A", 8, PricingCategory.FIRST, SeatingPlaceAvailability.RESERVED);
+        SeatingPlace a9 = new SeatingPlace("A", 9, PricingCategory.SECOND, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a10 = new SeatingPlace("A", 10, PricingCategory.SECOND, SeatingPlaceAvailability.AVAILABLE);
+
+        Row row = new Row("A", Arrays.asList(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10));
+        int rowSize = row.seatingPlaces().size();
+
+        var availableSeatsInCategory = row.seatingPlaces().stream()
+                .filter(SeatingPlace::isAvailable)
+                .filter(seat -> seat.matchCategory(PricingCategory.FIRST))
+                .toList();
+
+        var adjacentSeats = offerAdjacentSeats(availableSeatsInCategory, partySize, rowSize);
+
+        assertThat(adjacentSeats).containsExactly(a5, a6, a7);
+    }
+
+    /**
+     * When multiple contiguous windows of the requested size exist,
+     * the window closest to the middle of the row should be selected.
+     *
+     * Row layout for this test:
+     *      1   2   3   4   5   6   7   8   9  10
+     *  A:  1   1   1   1   1   1   1   1   1   1
+     *
+     * All 10 seats are FIRST and available.
+     * For party of 3, possible windows: [1,2,3], [2,3,4], ..., [8,9,10]
+     * Window [4,5,6] is closest to middle (center of window = seat 5, distance 1)
+     */
+    @Test
+    public void Offer_adjacent_seats_closest_to_the_middle_when_multiple_options_exist() {
+        int partySize = 3;
+
+        SeatingPlace a1 = new SeatingPlace("A", 1, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a2 = new SeatingPlace("A", 2, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a3 = new SeatingPlace("A", 3, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a4 = new SeatingPlace("A", 4, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a5 = new SeatingPlace("A", 5, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a6 = new SeatingPlace("A", 6, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a7 = new SeatingPlace("A", 7, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a8 = new SeatingPlace("A", 8, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a9 = new SeatingPlace("A", 9, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a10 = new SeatingPlace("A", 10, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
+
+        Row row = new Row("A", Arrays.asList(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10));
+        int rowSize = row.seatingPlaces().size();
+
+        var availableSeatsInCategory = row.seatingPlaces().stream()
+                .filter(SeatingPlace::isAvailable)
+                .filter(seat -> seat.matchCategory(PricingCategory.FIRST))
+                .toList();
+
+        var adjacentSeats = offerAdjacentSeats(availableSeatsInCategory, partySize, rowSize);
+
+        assertThat(adjacentSeats).containsExactly(a4, a5, a6);
+    }
+
+    // Deep Modeling: probing the code should start with a prototype.
+    private List<SeatingPlace> offerAdjacentSeats(List<SeatingPlace> availableSeatsInCategory, int partySize, int rowSize) {
+        // Implement your prototype here
+        return new ArrayList<>();
     }
 
     @Nested

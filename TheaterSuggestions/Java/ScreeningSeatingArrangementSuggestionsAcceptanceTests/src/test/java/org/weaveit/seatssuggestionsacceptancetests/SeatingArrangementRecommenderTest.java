@@ -114,4 +114,54 @@ class SeatingArrangementRecommenderTest {
         assertThat(suggestionsAreMade.seatNames(PricingCategory.FIRST)).containsExactly("A4", "A3", "B5");
     }
 
+    @Test
+    public void offer_adjacent_seats_nearer_the_middle_of_a_row_when_it_is_possible() throws IOException {
+        // Dock Street Auditorium-3
+        //
+        //      1   2   3   4   5   6   7   8   9  10
+        // A:  (2) (2) (1) (1) (1)  1   1   1   2   2
+        // B:   2   2   1   1  (1) (1) (1) (1)  2   2
+        // C:   2   2   2   2   2   2   2   2   2   2
+        // D:   2   2   2   2   2   2   2   2   2   2
+        // E:   3   3   3   3   3   3   3   3   3   3
+        // F:   3   3   3   3   3   3   3   3   3   3
+        final String showId = "3";
+        final int partyRequested = 4;
+
+        var auditoriumSeatingArrangements =
+                new AuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
+        var seatingArrangementRecommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);
+        var suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested);
+
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.FIRST)).isEmpty();
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.SECOND)).containsExactly("C5-C6-C7-C8", "C1-C2-C3-C4", "D5-D6-D7-D8");
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.THIRD)).containsExactly("E5-E6-E7-E8", "E1-E2-E3-E4", "F5-F6-F7-F8");
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.MIXED)).containsExactly("A6-A7-A8-A9", "B1-B2-B3-B4", "C5-C6-C7-C8");
+    }
+
+    @Test
+    public void should_offer_3_adjacent_seats_nearer_the_middle_of_a_row_when_it_is_possible() throws IOException {
+        // Dock Street Auditorium-3
+        //
+        //      1   2   3   4   5   6   7   8   9  10
+        // A : (2) (2) (1) (1) (1)  1   1   1   2   2
+        // B :  2   2   1   1  (1) (1) (1) (1)  2   2
+        // C :  2   2   2   2   2   2   2   2   2   2
+        // D :  2   2   2   2   2   2   2   2   2   2
+        // E :  3   3   3   3   3   3   3   3   3   3
+        // F :  3   3   3   3   3   3   3   3   3   3
+        final String showId = "3";
+        final int partyRequested = 3;
+
+        var auditoriumSeatingArrangements =
+                new AuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
+        var seatingArrangementRecommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);
+        var suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested);
+
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.FIRST)).containsExactly("A6-A7-A8");
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.SECOND)).containsExactly("C4-C5-C6", "C7-C8-C9", "C1-C2-C3");
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.THIRD)).containsExactly("E4-E5-E6", "E7-E8-E9", "E1-E2-E3");
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.MIXED)).containsExactly("A6-A7-A8", "B2-B3-B4", "C4-C5-C6");
+    }
+
 }

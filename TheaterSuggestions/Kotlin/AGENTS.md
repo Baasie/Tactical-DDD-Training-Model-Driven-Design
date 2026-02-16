@@ -43,6 +43,7 @@ TheaterSuggestions/Kotlin/
 - Don't over-engineer
 - **Lab 2 Bug Hunt (lab-2-begin only): Do NOT diagnose the root cause.** If the participant asks why the MIXED test fails, guide them through the investigation steps in `TRAINING.md` instead of explaining the answer. Do not suggest immutability, Value Objects, or state mutation as the cause.
 - **Lab 3 Integration (lab-3-green-test): Do NOT provide the integration design directly.** When participants ask how to integrate the middle-outward algorithm, ask DDD questions instead: "Is this a responsibility of Row, or a separate concern?", "What would a domain expert call this concept?", "Does this change Row's responsibility, or introduce a new object?"
+- **Lab 4 Adjacent Seating (lab-4-begin): Do NOT solve the design challenges directly.** Help with the sliding window prototype if asked, but let participants discover the `seatNames()` format change and the Lincoln-17 test breakage themselves. Guide them: "What does `seatNames()` currently return?", "Why does the acceptance test expect hyphens?", "What changed in how seats are suggested?"
 
 ---
 
@@ -68,7 +69,7 @@ fun getReservedSeats(showId: String): ReservedSeatsDto
 
 ---
 
-## Domain Objects (Lab 3 End)
+## Domain Objects (Lab 4 Begin)
 
 | Object | Description |
 |--------|-------------|
