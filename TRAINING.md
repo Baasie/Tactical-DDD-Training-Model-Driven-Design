@@ -535,9 +535,72 @@ Look at the completed integration and notice:
 
 ---
 
+## Lab 5: Hexagonal Architecture
+
+### Learning Goal
+
+Learn to classify domain objects by their architectural role and introduce ports and adapters (hexagonal architecture) to separate the domain from infrastructure concerns.
+
+### What Changed
+
+A new API/adapter project has been added for each language:
+
+| Language | Project | Framework |
+|----------|---------|-----------|
+| Java | `ScreeningSeatingArrangementSuggestionsApi` | Spring Boot 3.4.x |
+| Kotlin | `ScreeningSeatingArrangementSuggestionsApi` | Ktor 3.1.x |
+| C# | `ScreeningSeatingArrangementSuggestions.Api` | ASP.NET Core minimal API |
+
+Each project contains a working REST endpoint and dependencies on the domain module and ExternalDependencies:
+
+```
+GET /api/suggestions?showId={showId}&partySize={partySize}
+```
+
+The domain module is unchanged — all existing code stays where it is.
+
+### Your Task
+
+1. **Classify each class** in the domain module: does it belong in the domain or in an adapter? Look at each class and ask: *"What does this class depend on? Does it reach outside the domain?"*
+2. **Extract a port interface**: Once you've identified the class that doesn't belong in the domain, convert it to an interface (the **port**) that stays in the domain.
+3. **Move the implementation**: Move the current implementation to the new API/adapter project as the **adapter** that implements the port interface.
+4. **Wire the port to its adapter**: Update the API's composition root to inject the adapter implementation where the domain expects the port interface.
+
+### Investigation Guide
+
+Open the domain module and look at each class. For each one, ask:
+
+- **What does this class import?** Does it only import other domain classes, or does it reach into `ExternalDependencies`?
+- **Could you delete the `ExternalDependencies` module** and still compile this class? If not, it depends on infrastructure.
+- **Does this class translate between two worlds?** Does it convert external data structures into domain objects?
+
+When you find the class that doesn't belong, ask yourself:
+- What contract does the domain need from this class? (Just the method signatures, not the implementation)
+- Where should the interface live? Where should the implementation live?
+- What happens to `SeatingArrangementRecommender` — does it need to change?
+
+### Using AI Assistants
+
+You may use AI to help with:
+- Understanding the hexagonal architecture pattern
+- Wiring up dependency injection in the web framework
+- Discussing where port interfaces should live and why
+
+But do the classification yourself first — the insight comes from understanding *why* each class belongs where it does. Look at the imports.
+
+### Reflection Questions
+
+1. **Which class did you identify as not belonging in the domain?** What gave it away?
+2. **Why does the port interface stay in the domain?** What would happen if it moved to the adapter project?
+3. **How does the Dependency Inversion Principle apply here?** Which direction do the dependencies point?
+4. **What changed in the domain module?** How much of the domain code needed to change for this architectural refactoring?
+5. **What are the trade-offs of hexagonal architecture?** When is the added complexity worth it?
+
+---
+
 ## After the Labs: Final Reflection
 
-Take a few minutes to reflect on the full journey across all four labs.
+Take a few minutes to reflect on the full journey across all five labs.
 
 ### On the Domain Model
 
@@ -547,18 +610,24 @@ Take a few minutes to reflect on the full journey across all four labs.
 
 3. **Where did the model resist change?** Were there moments where adding a new requirement felt harder than expected? What does that tell you about the design?
 
+### On Architecture
+
+4. **How did hexagonal architecture change the codebase?** Was the refactoring in Lab 5 easier or harder than you expected? How much domain code actually changed?
+
+5. **What does the Dependency Inversion Principle buy you?** Now that the domain depends on a port interface instead of infrastructure, what becomes possible that wasn't before?
+
 ### On Using AI Assistants
 
-4. **How did your use of AI change across the labs?** Did you rely on it more or less as the labs progressed? Did you use it differently for prototyping vs. integration?
+6. **How did your use of AI change across the labs?** Did you rely on it more or less as the labs progressed? Did you use it differently for prototyping vs. integration vs. architectural refactoring?
 
-5. **Where did AI help most?** Was it more useful for implementing algorithms, reviewing designs, or exploring trade-offs?
+7. **Where did AI help most?** Was it more useful for implementing algorithms, reviewing designs, or exploring trade-offs?
 
-6. **Where did AI fall short?** Were there design decisions where AI gave you an answer but you needed to think it through yourself?
+8. **Where did AI fall short?** Were there design decisions where AI gave you an answer but you needed to think it through yourself?
 
-7. **What would you do differently?** If you could restart all four labs, how would you balance your own thinking with AI assistance?
+9. **What would you do differently?** If you could restart all five labs, how would you balance your own thinking with AI assistance?
 
 ### On DDD Tactical Patterns
 
-8. **Which tactical pattern was most valuable?** Value Objects, sealed interfaces, immutability, prototyping outside the model — which had the biggest impact on the code?
+10. **Which tactical pattern was most valuable?** Value Objects, sealed interfaces, immutability, prototyping outside the model, ports and adapters — which had the biggest impact on the code?
 
-9. **What would you take to your own projects?** Which practices from these labs would improve your day-to-day codebase?
+11. **What would you take to your own projects?** Which practices from these labs would improve your day-to-day codebase?

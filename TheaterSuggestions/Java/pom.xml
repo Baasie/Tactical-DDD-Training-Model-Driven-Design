@@ -17,6 +17,7 @@
         <module>ExternalDependencies</module>
         <module>ScreeningSeatingArrangementSuggestions</module>
         <module>ScreeningSeatingArrangementSuggestionsAcceptanceTests</module>
+        <module>ScreeningSeatingArrangementSuggestionsApi</module>
     </modules>
 
     <dependencyManagement>
@@ -34,6 +35,12 @@
             <dependency>
                 <groupId>org.weaveit</groupId>
                 <artifactId>ExternalDependencies</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.weaveit</groupId>
+                <artifactId>ScreeningSeatingArrangementSuggestionsApi</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

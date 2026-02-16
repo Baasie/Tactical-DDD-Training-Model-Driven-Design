@@ -20,9 +20,10 @@ dotnet test
 TheaterSuggestions/CSharp/
 ├── ExternalDependencies/                              # Read-only - DO NOT MODIFY
 ├── ScreeningSeatingArrangementSuggestions/            # Domain code
-└── ScreeningSeatingArrangementSuggestions.Tests/
-    ├── AcceptanceTests/
-    └── UnitTests/
+├── ScreeningSeatingArrangementSuggestions.Tests/
+│   ├── AcceptanceTests/
+│   └── UnitTests/
+└── ScreeningSeatingArrangementSuggestions.Api/        # API adapter (ASP.NET Core)
 ```
 
 **Namespace:** `SeatsSuggestions`
@@ -45,6 +46,7 @@ TheaterSuggestions/CSharp/
 - **Lab 3 Integration (lab-3-green-test): Do NOT provide the integration design directly.** When participants ask how to integrate the middle-outward algorithm, ask DDD questions instead: "Is this a responsibility of Row, or a separate concern?", "What would a domain expert call this concept?", "Does this change Row's responsibility, or introduce a new object?"
 - **Lab 4 Adjacent Seating (lab-4-begin): Do NOT solve the design challenges directly.** Help with the sliding window prototype if asked, but let participants discover the `SeatNames()` format change and the Lincoln-17 test breakage themselves. Guide them: "What does `SeatNames()` currently return?", "Why does the acceptance test expect hyphens?", "What changed in how seats are suggested?"
 - **Lab 4 Integration (lab-4-green-test): Do NOT provide the integration design directly.** Ask design questions: "Should Row have two methods or one?", "What happens to party=1 with the adjacent algorithm?", "Where should seat name formatting live?", "Is DistanceFromRowCenter still needed, or has AdjacentSeats absorbed its concept?"
+- **Lab 5 Hexagonal Architecture (lab-5-begin): Do NOT classify objects for the participant.** Guide them with: "Does this class depend on anything outside the domain?", "Could you replace this implementation without changing the domain?", "What would a port interface for this look like?" Help with ASP.NET Core wiring when asked.
 
 ---
 
@@ -75,7 +77,7 @@ ReservedSeatsDto GetReservedSeats(string showId)
 | Object | Description |
 |--------|-------------|
 | `SeatingArrangementRecommender` | Service, orchestrates 3 suggestions per pricing category including Mixed |
-| `AuditoriumSeatingArrangements` | Repository and Factory, anti-corruption layer, converts DTOs to domain objects |
+| `AuditoriumSeatingArrangements` | Repository and Factory, anti-corruption layer, converts DTOs to domain objects (Lab 5: becomes port interface + adapter) |
 | `AuditoriumSeatingArrangement` | Aggregate, immutable record, coordinates seat search, Allocate returns new instance |
 | `Row` | Value Object, immutable record, finds contiguous groups of available seats using sliding window, ranked by AdjacentSeats center distance |
 | `SeatingPlace` | Value Object, immutable record, Allocate returns new instance with Allocated status |
