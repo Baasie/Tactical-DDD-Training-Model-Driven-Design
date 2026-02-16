@@ -20,7 +20,7 @@ class RowTest {
      * For party of 1: A5 (the seat closest to middle)
      */
     @Test
-    fun `should suggest seats starting from middle of row`() {
+    fun `should suggest seats starting from middle of row even`() {
         val partySize = 1
 
         // Row with 10 seats - middle is between seat 5 and 6
@@ -43,6 +43,44 @@ class RowTest {
         assertThat(seatingOption).isInstanceOf(SeatingOptionIsSuggested::class.java)
         val suggested = seatingOption as SeatingOptionIsSuggested
         assertThat(suggested.seats()).containsExactly(a5)
+    }
+
+    /**
+     * For a row with 11 seats (odd), the middle is exactly seat 6.
+     *
+     * Row layout for this test:
+     *      1   2   3   4   5   6   7   8   9  10  11
+     *  A:  2   2   1  (1)  1   1   1   1  (1)  2   2
+     *
+     * Available FIRST category seats: A3, A5, A6, A7, A8
+     * Middle of row: seat 6
+     * For party of 1: A6 (the exact middle seat)
+     */
+    @Test
+    fun `should suggest seats starting from middle of row eneven`() {
+        val partySize = 1
+
+        // Row with 11 seats - middle is seat 6
+        val a1 = SeatingPlace("A", 1, PricingCategory.SECOND, SeatingPlaceAvailability.AVAILABLE)
+        val a2 = SeatingPlace("A", 2, PricingCategory.SECOND, SeatingPlaceAvailability.AVAILABLE)
+        val a3 = SeatingPlace("A", 3, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE)
+        val a4 = SeatingPlace("A", 4, PricingCategory.FIRST, SeatingPlaceAvailability.RESERVED)
+        val a5 = SeatingPlace("A", 5, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE)
+        val a6 = SeatingPlace("A", 6, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE)
+        val a7 = SeatingPlace("A", 7, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE)
+        val a8 = SeatingPlace("A", 8, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE)
+        val a9 = SeatingPlace("A", 9, PricingCategory.FIRST, SeatingPlaceAvailability.RESERVED)
+        val a10 = SeatingPlace("A", 10, PricingCategory.SECOND, SeatingPlaceAvailability.AVAILABLE)
+        val a11 = SeatingPlace("A", 11, PricingCategory.SECOND, SeatingPlaceAvailability.AVAILABLE)
+
+        val row = Row("A", listOf(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11))
+
+        val seatingOption = row.suggestSeatingOption(partySize, PricingCategory.FIRST)
+
+        // A6 is the exact middle seat (seat 6 of 11)
+        assertThat(seatingOption).isInstanceOf(SeatingOptionIsSuggested::class.java)
+        val suggested = seatingOption as SeatingOptionIsSuggested
+        assertThat(suggested.seats()).containsExactly(a6)
     }
 
     @Nested

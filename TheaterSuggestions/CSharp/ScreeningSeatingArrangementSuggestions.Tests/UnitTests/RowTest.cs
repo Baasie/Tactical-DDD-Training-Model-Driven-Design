@@ -22,7 +22,7 @@ public class RowTest
     /// For party of 1: A5 (the seat closest to middle)
     /// </summary>
     [Test]
-    public void Should_suggest_seats_starting_from_middle_of_row()
+    public void Should_suggest_seats_starting_from_middle_of_row_even()
     {
         var partySize = 1;
 
@@ -46,6 +46,45 @@ public class RowTest
         Check.That(seatingOption).IsInstanceOf<SeatingOptionIsSuggested>();
         var suggested = (SeatingOptionIsSuggested)seatingOption;
         Check.That(suggested.Seats()).ContainsExactly(a5);
+    }
+
+    /// <summary>
+    /// For a row with 11 seats (odd), the middle is exactly seat 6.
+    ///
+    /// Row layout for this test:
+    ///      1   2   3   4   5   6   7   8   9  10  11
+    ///  A:  2   2   1  (1)  1   1   1   1  (1)  2   2
+    ///
+    /// Available FIRST category seats: A3, A5, A6, A7, A8
+    /// Middle of row: seat 6
+    /// For party of 1: A6 (the exact middle seat)
+    /// </summary>
+    [Test]
+    public void Should_suggest_seats_starting_from_middle_of_row_eneven()
+    {
+        var partySize = 1;
+
+        // Row with 11 seats - middle is seat 6
+        var a1 = new SeatingPlace("A", 1, PricingCategory.Second, SeatingPlaceAvailability.Available);
+        var a2 = new SeatingPlace("A", 2, PricingCategory.Second, SeatingPlaceAvailability.Available);
+        var a3 = new SeatingPlace("A", 3, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a4 = new SeatingPlace("A", 4, PricingCategory.First, SeatingPlaceAvailability.Reserved);
+        var a5 = new SeatingPlace("A", 5, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a6 = new SeatingPlace("A", 6, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a7 = new SeatingPlace("A", 7, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a8 = new SeatingPlace("A", 8, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a9 = new SeatingPlace("A", 9, PricingCategory.First, SeatingPlaceAvailability.Reserved);
+        var a10 = new SeatingPlace("A", 10, PricingCategory.Second, SeatingPlaceAvailability.Available);
+        var a11 = new SeatingPlace("A", 11, PricingCategory.Second, SeatingPlaceAvailability.Available);
+
+        var row = new Row("A", new List<SeatingPlace> { a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11 });
+
+        var seatingOption = row.SuggestSeatingOption(partySize, PricingCategory.First);
+
+        // A6 is the exact middle seat (seat 6 of 11)
+        Check.That(seatingOption).IsInstanceOf<SeatingOptionIsSuggested>();
+        var suggested = (SeatingOptionIsSuggested)seatingOption;
+        Check.That(suggested.Seats()).ContainsExactly(a6);
     }
 
     [TestFixture]
