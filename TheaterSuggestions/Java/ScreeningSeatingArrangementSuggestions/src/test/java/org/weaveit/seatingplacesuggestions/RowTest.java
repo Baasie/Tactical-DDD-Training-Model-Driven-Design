@@ -117,16 +117,12 @@ class RowTest {
         SeatingPlace a10 = new SeatingPlace("A", 10, PricingCategory.SECOND, SeatingPlaceAvailability.AVAILABLE);
 
         Row row = new Row("A", Arrays.asList(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10));
-        int rowSize = row.seatingPlaces().size();
 
-        var availableSeatsInCategory = row.seatingPlaces().stream()
-                .filter(SeatingPlace::isAvailable)
-                .filter(seat -> seat.matchCategory(PricingCategory.FIRST))
-                .toList();
+        SeatingOption seatingOption = row.suggestSeatingOption(partySize, PricingCategory.FIRST);
 
-        var adjacentSeats = offerAdjacentSeats(availableSeatsInCategory, partySize, rowSize);
-
-        assertThat(adjacentSeats).containsExactly(a5, a6, a7);
+        assertThat(seatingOption).isInstanceOf(SeatingOptionIsSuggested.class);
+        var suggested = (SeatingOptionIsSuggested) seatingOption;
+        assertThat(suggested.seats()).containsExactly(a5, a6, a7);
     }
 
     /**
@@ -157,61 +153,12 @@ class RowTest {
         SeatingPlace a10 = new SeatingPlace("A", 10, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
 
         Row row = new Row("A", Arrays.asList(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10));
-        int rowSize = row.seatingPlaces().size();
 
-        var availableSeatsInCategory = row.seatingPlaces().stream()
-                .filter(SeatingPlace::isAvailable)
-                .filter(seat -> seat.matchCategory(PricingCategory.FIRST))
-                .toList();
+        SeatingOption seatingOption = row.suggestSeatingOption(partySize, PricingCategory.FIRST);
 
-        var adjacentSeats = offerAdjacentSeats(availableSeatsInCategory, partySize, rowSize);
-
-        assertThat(adjacentSeats).containsExactly(a4, a5, a6);
-    }
-
-    // Deep Modeling: probing the code should start with a prototype.
-    private List<SeatingPlace> offerAdjacentSeats(List<SeatingPlace> availableSeatsInCategory, int partySize, int rowSize) {
-        if (availableSeatsInCategory.size() < partySize) {
-            return new ArrayList<>();
-        }
-
-        // Find contiguous blocks of seats (consecutive seat numbers)
-        List<List<SeatingPlace>> contiguousBlocks = new ArrayList<>();
-        List<SeatingPlace> currentBlock = new ArrayList<>();
-        currentBlock.add(availableSeatsInCategory.get(0));
-
-        for (int i = 1; i < availableSeatsInCategory.size(); i++) {
-            if (availableSeatsInCategory.get(i).number() == availableSeatsInCategory.get(i - 1).number() + 1) {
-                currentBlock.add(availableSeatsInCategory.get(i));
-            } else {
-                contiguousBlocks.add(currentBlock);
-                currentBlock = new ArrayList<>();
-                currentBlock.add(availableSeatsInCategory.get(i));
-            }
-        }
-        contiguousBlocks.add(currentBlock);
-
-        // Find the window of partySize closest to the center of the row
-        double rowCenter = (rowSize + 1) / 2.0;
-        List<SeatingPlace> bestWindow = null;
-        double bestDistance = Double.MAX_VALUE;
-
-        for (List<SeatingPlace> block : contiguousBlocks) {
-            if (block.size() < partySize) continue;
-
-            for (int i = 0; i <= block.size() - partySize; i++) {
-                List<SeatingPlace> window = block.subList(i, i + partySize);
-                double windowCenter = (window.get(0).number() + window.get(window.size() - 1).number()) / 2.0;
-                double distance = Math.abs(windowCenter - rowCenter);
-
-                if (distance < bestDistance) {
-                    bestDistance = distance;
-                    bestWindow = new ArrayList<>(window);
-                }
-            }
-        }
-
-        return bestWindow != null ? bestWindow : new ArrayList<>();
+        assertThat(seatingOption).isInstanceOf(SeatingOptionIsSuggested.class);
+        var suggested = (SeatingOptionIsSuggested) seatingOption;
+        assertThat(suggested.seats()).containsExactly(a4, a5, a6);
     }
 
     @Nested

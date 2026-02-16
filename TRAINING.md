@@ -483,3 +483,82 @@ The prototype works. Now the real design questions:
 2. **Output format**: The acceptance tests expect hyphenated seat names (e.g., `"A5-A6-A7"`) for groups. Currently `SuggestionIsMade.seatNames()` returns individual names. What needs to change?
 
 3. **Breaking changes**: When you integrate adjacent seating, the Lincoln-17 (party=2) acceptance test will break — it currently expects individual seat names, but the adjacent algorithm will return grouped names. Think about why and how to fix the expectations.
+
+---
+
+## Lab 4: End — Adjacent Seating Integrated
+
+This branch represents the completed Lab 4. The adjacent seating algorithm is fully integrated into the domain model, all acceptance tests pass, and two key design improvements have been applied.
+
+### What Changed From Green Test
+
+- **`AdjacentSeats`** introduced as a new Value Object — represents a contiguous group of seats that can be offered together, with a distance-from-center measure for ranking. Uses a factory method `of()` that calculates the window center's distance from the row center.
+- **`Row.suggestSeatingOption()`** now uses the adjacent algorithm — finds contiguous blocks of available seats, slides a window of `partySize` across each block, creates `AdjacentSeats` for each window, and selects the one closest to the center. There is no separate method; the existing `suggestSeatingOption()` was unified to handle both individual and group seating through the same contiguous-window approach.
+- **Seat name formatting moved to display layer** — `SuggestionIsMade.seatNames()` returns individual seat names (e.g., `["A5", "A6", "A7"]`), while `SuggestionsAreMade.seatNames()` joins them with hyphens for display (e.g., `"A5-A6-A7"`). This follows the principle that formatting is a presentation concern, not a domain concern.
+- **`DistanceFromRowCenter`** is now unused — the concept of "distance from row center" lives on inside `AdjacentSeats.of()`, which calculates window-center distance using the same `(rowSize + 1) / 2.0` formula. The class remains in the codebase as a discussion point.
+- **Acceptance test expectations updated** — Lincoln-17 (party=2) now expects grouped format: `"A1-A2"`, `"A9-A10"`, `"B1-B2"` instead of individual seat names.
+
+### The Deep Modeling Insight
+
+The prototype revealed `AdjacentSeats` as a domain concept worth naming. It captures two ideas in one Value Object:
+1. **Adjacency** — a group of contiguous seats that a party can sit in together
+2. **Desirability** — measured by the group's center distance from the row center
+
+By making this a named concept with natural ordering (`Comparable`), the algorithm becomes declarative: "find all possible adjacent seat groups, pick the best one."
+
+### Design Decisions Worth Discussing
+
+1. **Single method vs. two methods on Row**: The prototype initially suggested adding `suggestAdjacentSeatingOption()` alongside `suggestSeatingOption()`. But since adjacent seating with a window of 1 produces the same result as individual seat selection, we unified into a single method. This eliminated dead code and simplified the API. An alternative approach would use separate strategy classes — both are valid with different trade-offs.
+
+2. **Display-layer formatting**: Moving hyphen-joining from `SuggestionIsMade` to `SuggestionsAreMade` is a separation of concerns decision. `SuggestionIsMade` is a domain object that knows about seats; `SuggestionsAreMade` is closer to the application boundary where formatting decisions live. This keeps the domain model free of presentation logic.
+
+3. **DistanceFromRowCenter as dead code**: After unifying the method, `DistanceFromRowCenter` is no longer called anywhere. It represents the Lab 3 concept that was superseded by `AdjacentSeats`. This is a natural consequence of deep modeling — earlier concepts may be absorbed into deeper ones. Should it be deleted, or kept as documentation of the modeling journey?
+
+4. **Window-center vs. sum-of-distances**: The algorithm ranks windows by their center's distance from the row center. An alternative approach sums each individual seat's distance from the center. Both produce the same results for the test cases, but they represent different domain intuitions: "is the group centered?" vs. "are the individual seats close?"
+
+### What to Review
+
+Look at the completed integration and notice:
+- How `AdjacentSeats` encapsulates both the grouping concept and the ranking logic — a clean, small Value Object
+- How the sliding window algorithm reads naturally: filter → find contiguous blocks → slide windows → rank by AdjacentSeats → pick best
+- How the unified `suggestSeatingOption()` handles party=1 and party=N identically — no special cases
+- How the formatting responsibility split between `SuggestionIsMade` and `SuggestionsAreMade` keeps domain objects free of display concerns
+- How `DistanceFromRowCenter` becoming unused is a natural consequence of the model evolving — earlier stepping stones may be absorbed into deeper concepts
+
+### Discussion Points
+
+1. Is `AdjacentSeats` a concept a domain expert would recognize? What would they call it — "seating group"? "party block"? "seat cluster"?
+2. Should `DistanceFromRowCenter` be deleted since it's unused, or does its presence document the modeling journey from Lab 3?
+3. Compare the single-method approach with a two-strategy-classes approach. When would you prefer one over the other?
+4. Where should formatting decisions like hyphenated seat names live in a DDD architecture? Is `SuggestionsAreMade` the right boundary?
+5. How does the `AdjacentSeats` Value Object demonstrate the "making implicit concepts explicit" principle from Evans?
+
+---
+
+## After the Labs: Final Reflection
+
+Take a few minutes to reflect on the full journey across all four labs.
+
+### On the Domain Model
+
+1. **How did the model evolve?** Compare the domain model at the end of Lab 1 with what you have now. Which objects survived unchanged? Which were refactored? Which are new?
+
+2. **What did deep modeling reveal?** Labs 3 and 4 introduced prototyping outside the model. Did this approach help you discover concepts you wouldn't have found otherwise?
+
+3. **Where did the model resist change?** Were there moments where adding a new requirement felt harder than expected? What does that tell you about the design?
+
+### On Using AI Assistants
+
+4. **How did your use of AI change across the labs?** Did you rely on it more or less as the labs progressed? Did you use it differently for prototyping vs. integration?
+
+5. **Where did AI help most?** Was it more useful for implementing algorithms, reviewing designs, or exploring trade-offs?
+
+6. **Where did AI fall short?** Were there design decisions where AI gave you an answer but you needed to think it through yourself?
+
+7. **What would you do differently?** If you could restart all four labs, how would you balance your own thinking with AI assistance?
+
+### On DDD Tactical Patterns
+
+8. **Which tactical pattern was most valuable?** Value Objects, sealed interfaces, immutability, prototyping outside the model — which had the biggest impact on the code?
+
+9. **What would you take to your own projects?** Which practices from these labs would improve your day-to-day codebase?

@@ -30,7 +30,7 @@ class SeatingArrangementRecommender(
         partyRequested: Int,
         pricingCategory: PricingCategory
     ): List<SuggestionIsMade> {
-        val foundedSuggestions = mutableListOf<SuggestionIsMade>()
+        val foundSuggestions = mutableListOf<SuggestionIsMade>()
         var currentArrangement = auditoriumSeatingArrangement
 
         for (i in 0 until NUMBER_OF_SUGGESTIONS) {
@@ -38,10 +38,10 @@ class SeatingArrangementRecommender(
 
             if (seatingOptionSuggested.matchExpectation()) {
                 currentArrangement = currentArrangement.allocate(seatingOptionSuggested.seats())
-                foundedSuggestions.add(SuggestionIsMade(seatingOptionSuggested))
+                foundSuggestions.add(SuggestionIsMade(seatingOptionSuggested))
             }
         }
 
-        return foundedSuggestions
+        return foundSuggestions
     }
 }

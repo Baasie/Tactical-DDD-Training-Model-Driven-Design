@@ -13,24 +13,46 @@ public record Row(String name, List<SeatingPlace> seatingPlaces) {
     }
 
     public SeatingOption suggestSeatingOption(int partyRequested, PricingCategory pricingCategory) {
-        var selectedSeats = new ArrayList<SeatingPlace>();
         int rowSize = seatingPlaces.size();
 
-        var availableSeatsCloserToCenter = seatingPlaces.stream()
+        var availableSeats = seatingPlaces.stream()
                 .filter(SeatingPlace::isAvailable)
                 .filter(seat -> seat.matchCategory(pricingCategory))
-                .sorted(Comparator.comparing(seat -> DistanceFromRowCenter.of(seat.number(), rowSize)))
                 .toList();
 
-        for (var seat : availableSeatsCloserToCenter) {
-            selectedSeats.add(seat);
-
-            if (selectedSeats.size() == partyRequested) {
-                return new SeatingOptionIsSuggested(partyRequested, pricingCategory, selectedSeats);
-            }
+        if (availableSeats.size() < partyRequested) {
+            return new SeatingOptionIsNotAvailable(partyRequested, pricingCategory);
         }
 
-        return new SeatingOptionIsNotAvailable(partyRequested, pricingCategory);
+        // Find contiguous blocks of available seats
+        var contiguousBlocks = new ArrayList<List<SeatingPlace>>();
+        var currentBlock = new ArrayList<SeatingPlace>();
+        currentBlock.add(availableSeats.get(0));
+
+        for (int i = 1; i < availableSeats.size(); i++) {
+            if (availableSeats.get(i).number() == availableSeats.get(i - 1).number() + 1) {
+                currentBlock.add(availableSeats.get(i));
+            } else {
+                contiguousBlocks.add(List.copyOf(currentBlock));
+                currentBlock.clear();
+                currentBlock.add(availableSeats.get(i));
+            }
+        }
+        contiguousBlocks.add(List.copyOf(currentBlock));
+
+        // Find the best adjacent seating option
+        return contiguousBlocks.stream()
+                .filter(block -> block.size() >= partyRequested)
+                .flatMap(block -> {
+                    var windows = new ArrayList<AdjacentSeats>();
+                    for (int i = 0; i <= block.size() - partyRequested; i++) {
+                        windows.add(AdjacentSeats.of(block.subList(i, i + partyRequested), rowSize));
+                    }
+                    return windows.stream();
+                })
+                .min(Comparator.naturalOrder())
+                .map(adj -> (SeatingOption) new SeatingOptionIsSuggested(partyRequested, pricingCategory, adj.seats()))
+                .orElse(new SeatingOptionIsNotAvailable(partyRequested, pricingCategory));
     }
 
     public Row allocate(List<SeatingPlace> seatsToAllocate) {

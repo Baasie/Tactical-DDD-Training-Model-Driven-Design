@@ -87,13 +87,13 @@ Purpose: Represents a single row of seats — finds groups of available seats th
 - Its ordered collection of seating places
 
 **Does:**
-- Find available seats matching a party size and pricing category, ordered from center outward
+- Find contiguous groups of available seats matching a party size and pricing category, ranked by proximity to center
 - Return a SeatingOption (either SeatingOptionIsSuggested or SeatingOptionIsNotAvailable)
 - Allocate seats (return a new instance with updated seating places)
 
 **Collaborators:**
 - SeatingPlace
-- DistanceFromRowCenter
+- AdjacentSeats
 
 ### Seating Option
 
@@ -179,7 +179,7 @@ Purpose: Represents a confirmed suggestion — an immutable snapshot of seats th
 - Its pricing category
 
 **Does:**
-- Return seat names for display
+- Return individual seat names (e.g., ["A5", "A6", "A7"])
 - Check if the suggestion matches the party size expectation
 
 **Collaborators:**
@@ -187,7 +187,7 @@ Purpose: Represents a confirmed suggestion — an immutable snapshot of seats th
 
 ### Suggestions Are Made
 
-Purpose: Holds the complete set of suggestions for a show request — organizes them by pricing category.
+Purpose: Holds the complete set of suggestions for a show request — organizes them by pricing category and formats seat names for display.
 
 **Knows:**
 - The show ID and party size
@@ -195,7 +195,7 @@ Purpose: Holds the complete set of suggestions for a show request — organizes 
 
 **Does:**
 - Accept and categorize new suggestions
-- Return seat names for a given pricing category
+- Return formatted seat names for a given pricing category (joins individual names with hyphens, e.g., "A5-A6-A7")
 - Check if any suggestion across all categories matched expectations
 
 **Collaborators:**
@@ -228,9 +228,24 @@ Purpose: Represents the pricing tiers available in an auditorium, including a wi
 **Collaborators:**
 - None
 
+### Adjacent Seats
+
+Purpose: Represents a contiguous group of seats that can be offered together to a party — the group closest to the center of the row is preferred.
+
+**Knows:**
+- Its list of contiguous seats
+- Its distance from row center (calculated from the group's center position)
+
+**Does:**
+- Create itself from a window of seats and a row size (factory method)
+- Compare itself to another AdjacentSeats for ranking (closer to center wins, ties broken by lower seat number)
+
+**Collaborators:**
+- SeatingPlace
+
 ### Distance From Row Center
 
-Purpose: Represents how far a seat is from the center of its row — seats closer to the center provide a better viewing experience.
+Purpose: Represents how far a seat is from the center of its row — seats closer to the center provide a better viewing experience. **Note: currently unused in the codebase** — the concept was superseded by `AdjacentSeats`, which calculates window-center distance internally. Retained as a discussion point about how domain concepts evolve during deep modeling.
 
 **Knows:**
 - Its distance value
@@ -251,5 +266,6 @@ How the domain objects map to DDD tactical patterns:
 | **Service** | SeatingArrangementRecommender |
 | **Repository and Factory** | AuditoriumSeatingArrangements |
 | **Aggregate** | AuditoriumSeatingArrangement |
-| **Value Object** | SeatingPlace, Row, SeatingOption, SeatingOptionIsSuggested, SuggestionIsMade, SuggestionsAreMade, PricingCategory, SeatingPlaceAvailability, DistanceFromRowCenter |
+| **Value Object** | SeatingPlace, Row, SeatingOption, SeatingOptionIsSuggested, SuggestionIsMade, SuggestionsAreMade, PricingCategory, SeatingPlaceAvailability, AdjacentSeats |
+| **Value Object (unused)** | DistanceFromRowCenter (superseded by AdjacentSeats) |
 | **Value Object (Null Object)** | SeatingOptionIsNotAvailable, SuggestionsAreNotAvailable |

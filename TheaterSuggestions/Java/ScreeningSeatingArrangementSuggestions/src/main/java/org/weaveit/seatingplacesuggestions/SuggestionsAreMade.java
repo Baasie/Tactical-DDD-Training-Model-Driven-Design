@@ -36,8 +36,7 @@ public class SuggestionsAreMade {
 
     public List<String> seatNames(PricingCategory pricingCategory) {
         return forCategory.get(pricingCategory).stream()
-                .map(SuggestionIsMade::seatNames)
-                .flatMap(Collection::stream)
+                .map(suggestion -> String.join("-", suggestion.seatNames()))
                 .toList();
     }
 

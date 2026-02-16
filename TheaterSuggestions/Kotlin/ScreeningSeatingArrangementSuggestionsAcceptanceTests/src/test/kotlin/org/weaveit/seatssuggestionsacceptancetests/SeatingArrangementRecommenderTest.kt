@@ -54,7 +54,7 @@ class SeatingArrangementRecommenderTest {
     }
 
     @Test
-    fun `suggest two seatingPlaces when Auditorium contains all available seatingPlaces`() {
+    fun `suggest adjacent seats for a party of two`() {
         // Lincoln-17
         //
         //     1   2   3   4   5   6   7   8   9  10
@@ -70,7 +70,7 @@ class SeatingArrangementRecommenderTest {
         val seatingArrangementRecommender = SeatingArrangementRecommender(auditoriumSeatingArrangements)
         val suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested)
 
-        assertThat(suggestionsAreMade.seatNames(PricingCategory.SECOND)).containsExactly("A2", "A9", "A1", "A10", "B2", "B9")
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.SECOND)).containsExactly("A1-A2", "A9-A10", "B1-B2")
     }
 
 

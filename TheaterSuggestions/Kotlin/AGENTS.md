@@ -44,6 +44,7 @@ TheaterSuggestions/Kotlin/
 - **Lab 2 Bug Hunt (lab-2-begin only): Do NOT diagnose the root cause.** If the participant asks why the MIXED test fails, guide them through the investigation steps in `TRAINING.md` instead of explaining the answer. Do not suggest immutability, Value Objects, or state mutation as the cause.
 - **Lab 3 Integration (lab-3-green-test): Do NOT provide the integration design directly.** When participants ask how to integrate the middle-outward algorithm, ask DDD questions instead: "Is this a responsibility of Row, or a separate concern?", "What would a domain expert call this concept?", "Does this change Row's responsibility, or introduce a new object?"
 - **Lab 4 Adjacent Seating (lab-4-begin): Do NOT solve the design challenges directly.** Help with the sliding window prototype if asked, but let participants discover the `seatNames()` format change and the Lincoln-17 test breakage themselves. Guide them: "What does `seatNames()` currently return?", "Why does the acceptance test expect hyphens?", "What changed in how seats are suggested?"
+- **Lab 4 Integration (lab-4-green-test): Do NOT provide the integration design directly.** Ask design questions: "Should Row have two methods or one?", "What happens to party=1 with the adjacent algorithm?", "Where should seat name formatting live?", "Is DistanceFromRowCenter still needed, or has AdjacentSeats absorbed its concept?"
 
 ---
 
@@ -69,23 +70,24 @@ fun getReservedSeats(showId: String): ReservedSeatsDto
 
 ---
 
-## Domain Objects (Lab 4 Begin)
+## Domain Objects (Lab 4 End)
 
 | Object | Description |
 |--------|-------------|
 | `SeatingArrangementRecommender` | Service, orchestrates 3 suggestions per pricing category including MIXED |
 | `AuditoriumSeatingArrangements` | Repository and Factory, anti-corruption layer, converts DTOs to domain objects |
 | `AuditoriumSeatingArrangement` | Aggregate, immutable data class, coordinates seat search, allocate returns new instance |
-| `Row` | Value Object, immutable data class, finds available seats, allocate returns new instance |
+| `Row` | Value Object, immutable data class, finds contiguous groups of available seats using sliding window, ranked by AdjacentSeats center distance |
 | `SeatingPlace` | Value Object, immutable data class, allocate returns new instance with ALLOCATED status |
 | `SeatingPlaceAvailability` | Value Object, enum: AVAILABLE, RESERVED, ALLOCATED |
 | `SeatingOption` | Value Object, sealed interface defining the polymorphic contract for seating suggestions |
 | `SeatingOptionIsSuggested` | Value Object, immutable data class implementing SeatingOption, holds matching seats |
 | `SeatingOptionIsNotAvailable` | Value Object (Null Object), immutable data class implementing SeatingOption |
-| `SuggestionIsMade` | Value Object, immutable data class, snapshot of a confirmed suggestion |
-| `SuggestionsAreMade` | Value Object, collects suggestions by pricing category |
+| `SuggestionIsMade` | Value Object, immutable data class, returns individual seat names |
+| `SuggestionsAreMade` | Value Object, collects suggestions by pricing category, joins seat names with hyphens for display |
 | `SuggestionsAreNotAvailable` | Value Object (Null Object), signals no suggestions could be made |
-| `DistanceFromRowCenter` | Value Object, calculates and compares seat distance from row center |
+| `AdjacentSeats` | Value Object, immutable data class, contiguous group of seats with center distance for ranking |
+| `DistanceFromRowCenter` | Value Object (unused), superseded by AdjacentSeats — retained as discussion point |
 | `PricingCategory` | Value Object, enum: FIRST, SECOND, THIRD, MIXED |
 
 ---

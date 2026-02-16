@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using NFluent;
 using NUnit.Framework;
 using SeatsSuggestions;
@@ -118,16 +116,12 @@ public class RowTest
         var a10 = new SeatingPlace("A", 10, PricingCategory.Second, SeatingPlaceAvailability.Available);
 
         var row = new Row("A", new List<SeatingPlace> { a1, a2, a3, a4, a5, a6, a7, a8, a9, a10 });
-        var rowSize = row.SeatingPlaces.Count;
 
-        var availableSeatsInCategory = row.SeatingPlaces
-            .Where(seat => seat.IsAvailable())
-            .Where(seat => seat.MatchCategory(PricingCategory.First))
-            .ToList();
+        var seatingOption = row.SuggestSeatingOption(partySize, PricingCategory.First);
 
-        var adjacentSeats = OfferAdjacentSeats(availableSeatsInCategory, partySize, rowSize);
-
-        Check.That(adjacentSeats).ContainsExactly(a5, a6, a7);
+        Check.That(seatingOption).IsInstanceOf<SeatingOptionIsSuggested>();
+        var suggested = (SeatingOptionIsSuggested)seatingOption;
+        Check.That(suggested.Seats()).ContainsExactly(a5, a6, a7);
     }
 
     /// <summary>
@@ -159,66 +153,12 @@ public class RowTest
         var a10 = new SeatingPlace("A", 10, PricingCategory.First, SeatingPlaceAvailability.Available);
 
         var row = new Row("A", new List<SeatingPlace> { a1, a2, a3, a4, a5, a6, a7, a8, a9, a10 });
-        var rowSize = row.SeatingPlaces.Count;
 
-        var availableSeatsInCategory = row.SeatingPlaces
-            .Where(seat => seat.IsAvailable())
-            .Where(seat => seat.MatchCategory(PricingCategory.First))
-            .ToList();
+        var seatingOption = row.SuggestSeatingOption(partySize, PricingCategory.First);
 
-        var adjacentSeats = OfferAdjacentSeats(availableSeatsInCategory, partySize, rowSize);
-
-        Check.That(adjacentSeats).ContainsExactly(a4, a5, a6);
-    }
-
-    // Deep Modeling: probing the code should start with a prototype.
-    private List<SeatingPlace> OfferAdjacentSeats(List<SeatingPlace> availableSeatsInCategory, int partySize, int rowSize)
-    {
-        if (availableSeatsInCategory.Count < partySize)
-            return new List<SeatingPlace>();
-
-        // Find contiguous blocks of seats (consecutive seat numbers)
-        var contiguousBlocks = new List<List<SeatingPlace>>();
-        var currentBlock = new List<SeatingPlace> { availableSeatsInCategory[0] };
-
-        for (var i = 1; i < availableSeatsInCategory.Count; i++)
-        {
-            if (availableSeatsInCategory[i].Number == availableSeatsInCategory[i - 1].Number + 1)
-            {
-                currentBlock.Add(availableSeatsInCategory[i]);
-            }
-            else
-            {
-                contiguousBlocks.Add(currentBlock);
-                currentBlock = new List<SeatingPlace> { availableSeatsInCategory[i] };
-            }
-        }
-        contiguousBlocks.Add(currentBlock);
-
-        // Find the window of partySize closest to the center of the row
-        var rowCenter = (rowSize + 1) / 2.0;
-        List<SeatingPlace> bestWindow = null;
-        var bestDistance = double.MaxValue;
-
-        foreach (var block in contiguousBlocks)
-        {
-            if (block.Count < partySize) continue;
-
-            for (var i = 0; i <= block.Count - partySize; i++)
-            {
-                var window = block.GetRange(i, partySize);
-                var windowCenter = (window[0].Number + window[^1].Number) / 2.0;
-                var distance = Math.Abs(windowCenter - rowCenter);
-
-                if (distance < bestDistance)
-                {
-                    bestDistance = distance;
-                    bestWindow = window;
-                }
-            }
-        }
-
-        return bestWindow ?? new List<SeatingPlace>();
+        Check.That(seatingOption).IsInstanceOf<SeatingOptionIsSuggested>();
+        var suggested = (SeatingOptionIsSuggested)seatingOption;
+        Check.That(suggested.Seats()).ContainsExactly(a4, a5, a6);
     }
 
     [TestFixture]

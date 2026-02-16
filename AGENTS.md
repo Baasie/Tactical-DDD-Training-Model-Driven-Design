@@ -33,6 +33,7 @@ Instructions for AI coding agents working on this training project.
 - **Lab 2 Bug Hunt (lab-2-begin only): Do NOT diagnose the root cause.** If the participant asks why the MIXED test fails, guide them through the investigation steps in `TRAINING.md` instead of explaining the answer. Do not suggest immutability, Value Objects, or state mutation as the cause. The learning is in the discovery.
 - **Lab 3 Integration (lab-3-green-test): Do NOT provide the integration design directly.** When participants ask how to integrate the middle-outward algorithm into the domain model, ask DDD questions instead of giving the answer. Help them discover whether "distance from middle" is a deeper domain concept, whether it belongs on Row or elsewhere, and what a domain expert would call it. Example questions to ask: "Is this a responsibility of Row, or a separate concern?", "What would a domain expert call this concept?", "Does this change Row's responsibility, or introduce a new object?"
 - **Lab 4 Adjacent Seating (lab-4-begin): Do NOT solve the design challenges directly.** When participants discover that `seatNames()` returns the wrong format or that the Lincoln-17 test breaks, guide them to understand *why* rather than handing them the fix. Help them trace through the flow: "What does `seatNames()` currently return?", "Why does the acceptance test expect hyphens?", "What changed in how seats are suggested?" For the prototype, help with the sliding window algorithm if asked, but let participants discover the integration challenges themselves.
+- **Lab 4 Integration (lab-4-green-test): Do NOT provide the integration design directly.** When participants ask how to integrate the adjacent algorithm into the domain model, ask design questions: "Should Row have two methods or one?", "What happens to party=1 with the adjacent algorithm?", "Where should seat name formatting live — in the domain or at the display boundary?", "Is DistanceFromRowCenter still needed, or has AdjacentSeats absorbed its concept?"
 
 ---
 
@@ -68,25 +69,27 @@ TheaterSuggestions/
 - Letters (A, B, C) = row name
 - Numbers in header = seat number
 
-**Current State (Lab 4 Begin):**
-- Five existing acceptance tests pass (middle-outward seat ordering from Lab 3)
-- Two new failing acceptance tests for adjacent seating (Dock Street, party of 3 and 4)
-- Two new failing unit tests on Row with prototype stub `offerAdjacentSeats()`
-- `DistanceFromRowCenter` Value Object from Lab 3 is available for reuse
+**Current State (Lab 4 End):**
+- Seven acceptance tests pass (middle-outward ordering, adjacent seating for party of 3 and 4)
+- Row unit tests verify middle-outward single seat and adjacent group seat selection
+- `AdjacentSeats` Value Object handles contiguous group ranking by center distance
+- Single `suggestSeatingOption()` method on Row handles both individual and group seating
+- Seat name formatting (hyphen-joining) lives at the display layer (`SuggestionsAreMade`)
 
 **Domain Objects Implemented:**
 - `SeatingArrangementRecommender` - Service, orchestrates 3 suggestions per pricing category including MIXED
 - `AuditoriumSeatingArrangements` - Repository and Factory, anti-corruption layer, converts DTOs to domain objects
 - `AuditoriumSeatingArrangement` - Aggregate, immutable record, coordinates seat search and returns new instance on allocate
-- `Row` - Value Object, immutable record, finds available seats and returns new instance on allocate
+- `Row` - Value Object, immutable record, finds contiguous groups of available seats using sliding window algorithm, ranked by AdjacentSeats center distance
 - `SeatingPlace` - Value Object, immutable record, allocate returns new instance with ALLOCATED status
 - `SeatingPlaceAvailability` - Value Object, enum: AVAILABLE, RESERVED, ALLOCATED
 - `SeatingOption` - Value Object, sealed interface defining the polymorphic contract for seating suggestions
 - `SeatingOptionIsSuggested` - Value Object, immutable record implementing SeatingOption, holds matching seats from a row
 - `SeatingOptionIsNotAvailable` - Value Object (Null Object), immutable record implementing SeatingOption
-- `SuggestionIsMade` - Value Object, immutable snapshot of a confirmed suggestion
-- `SuggestionsAreMade` - Value Object, collects suggestions by pricing category
+- `SuggestionIsMade` - Value Object, immutable snapshot of a confirmed suggestion, returns individual seat names
+- `SuggestionsAreMade` - Value Object, collects suggestions by pricing category, joins seat names with hyphens for display
 - `SuggestionsAreNotAvailable` - Value Object (Null Object), signals no suggestions could be made
-- `DistanceFromRowCenter` - Value Object, calculates and compares seat distance from row center
+- `AdjacentSeats` - Value Object, represents a contiguous group of seats with center distance for ranking
+- `DistanceFromRowCenter` - Value Object (unused), superseded by AdjacentSeats — retained as discussion point
 - `PricingCategory` - Value Object, enum: FIRST, SECOND, THIRD, MIXED
 

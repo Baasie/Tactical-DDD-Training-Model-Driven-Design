@@ -37,7 +37,7 @@ public class SuggestionsAreMade
     public List<string> SeatNames(PricingCategory pricingCategory)
     {
         return _forCategory[pricingCategory]
-            .SelectMany(s => s.SeatNames())
+            .Select(s => string.Join("-", s.SeatNames()))
             .ToList();
     }
 

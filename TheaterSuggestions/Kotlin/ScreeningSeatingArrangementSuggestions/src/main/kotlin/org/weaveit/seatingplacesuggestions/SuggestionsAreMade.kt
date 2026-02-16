@@ -26,7 +26,7 @@ open class SuggestionsAreMade(
 
     fun seatNames(pricingCategory: PricingCategory): List<String> {
         return forCategory[pricingCategory]!!
-            .flatMap { it.seatNames() }
+            .map { it.seatNames().joinToString("-") }
     }
 
     fun matchExpectations(): Boolean {

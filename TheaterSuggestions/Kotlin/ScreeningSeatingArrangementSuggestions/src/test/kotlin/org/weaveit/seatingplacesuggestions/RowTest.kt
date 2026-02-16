@@ -111,15 +111,12 @@ class RowTest {
         val a10 = SeatingPlace("A", 10, PricingCategory.SECOND, SeatingPlaceAvailability.AVAILABLE)
 
         val row = Row("A", listOf(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10))
-        val rowSize = row.seatingPlaces.size
 
-        val availableSeatsInCategory = row.seatingPlaces
-            .filter { it.isAvailable() }
-            .filter { it.matchCategory(PricingCategory.FIRST) }
+        val seatingOption = row.suggestSeatingOption(partySize, PricingCategory.FIRST)
 
-        val adjacentSeats = offerAdjacentSeats(availableSeatsInCategory, partySize, rowSize)
-
-        assertThat(adjacentSeats).containsExactly(a5, a6, a7)
+        assertThat(seatingOption).isInstanceOf(SeatingOptionIsSuggested::class.java)
+        val suggested = seatingOption as SeatingOptionIsSuggested
+        assertThat(suggested.seats()).containsExactly(a5, a6, a7)
     }
 
     /**
@@ -150,57 +147,12 @@ class RowTest {
         val a10 = SeatingPlace("A", 10, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE)
 
         val row = Row("A", listOf(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10))
-        val rowSize = row.seatingPlaces.size
 
-        val availableSeatsInCategory = row.seatingPlaces
-            .filter { it.isAvailable() }
-            .filter { it.matchCategory(PricingCategory.FIRST) }
+        val seatingOption = row.suggestSeatingOption(partySize, PricingCategory.FIRST)
 
-        val adjacentSeats = offerAdjacentSeats(availableSeatsInCategory, partySize, rowSize)
-
-        assertThat(adjacentSeats).containsExactly(a4, a5, a6)
-    }
-
-    // Deep Modeling: probing the code should start with a prototype.
-    private fun offerAdjacentSeats(availableSeatsInCategory: List<SeatingPlace>, partySize: Int, rowSize: Int): List<SeatingPlace> {
-        if (availableSeatsInCategory.size < partySize) return emptyList()
-
-        // Find contiguous blocks of seats (consecutive seat numbers)
-        val contiguousBlocks = mutableListOf<List<SeatingPlace>>()
-        val currentBlock = mutableListOf(availableSeatsInCategory[0])
-
-        for (i in 1 until availableSeatsInCategory.size) {
-            if (availableSeatsInCategory[i].number == availableSeatsInCategory[i - 1].number + 1) {
-                currentBlock.add(availableSeatsInCategory[i])
-            } else {
-                contiguousBlocks.add(currentBlock.toList())
-                currentBlock.clear()
-                currentBlock.add(availableSeatsInCategory[i])
-            }
-        }
-        contiguousBlocks.add(currentBlock.toList())
-
-        // Find the window of partySize closest to the center of the row
-        val rowCenter = (rowSize + 1) / 2.0
-        var bestWindow: List<SeatingPlace> = emptyList()
-        var bestDistance = Double.MAX_VALUE
-
-        for (block in contiguousBlocks) {
-            if (block.size < partySize) continue
-
-            for (i in 0..block.size - partySize) {
-                val window = block.subList(i, i + partySize)
-                val windowCenter = (window.first().number + window.last().number) / 2.0
-                val distance = kotlin.math.abs(windowCenter - rowCenter)
-
-                if (distance < bestDistance) {
-                    bestDistance = distance
-                    bestWindow = window.toList()
-                }
-            }
-        }
-
-        return bestWindow
+        assertThat(seatingOption).isInstanceOf(SeatingOptionIsSuggested::class.java)
+        val suggested = seatingOption as SeatingOptionIsSuggested
+        assertThat(suggested.seats()).containsExactly(a4, a5, a6)
     }
 
     @Nested

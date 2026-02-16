@@ -35,7 +35,7 @@ public class SeatingArrangementRecommender
         int partyRequested,
         PricingCategory pricingCategory)
     {
-        var foundedSuggestions = new List<SuggestionIsMade>();
+        var foundSuggestions = new List<SuggestionIsMade>();
         var currentArrangement = auditoriumSeatingArrangement;
 
         for (int i = 0; i < NumberOfSuggestions; i++)
@@ -45,10 +45,10 @@ public class SeatingArrangementRecommender
             if (seatingOptionSuggested.MatchExpectation())
             {
                 currentArrangement = currentArrangement.Allocate(seatingOptionSuggested.Seats());
-                foundedSuggestions.Add(new SuggestionIsMade(seatingOptionSuggested));
+                foundSuggestions.Add(new SuggestionIsMade(seatingOptionSuggested));
             }
         }
 
-        return foundedSuggestions;
+        return foundSuggestions;
     }
 }

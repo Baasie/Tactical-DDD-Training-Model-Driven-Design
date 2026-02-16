@@ -51,7 +51,7 @@ namespace SeatsSuggestions.Tests.AcceptanceTests
         }
 
         [Test]
-        public void Suggest_two_seatingPlaces_when_Auditorium_contains_all_available_seatingPlaces()
+        public void Suggest_adjacent_seats_for_a_party_of_two()
         {
             // Lincoln Auditorium-17
             //     1   2   3   4   5   6   7   8   9  10
@@ -66,7 +66,7 @@ namespace SeatsSuggestions.Tests.AcceptanceTests
             var suggestionsAreMade = seatingArrangementRecommender.MakeSuggestions(showId, partyRequested);
 
             var seatNames = suggestionsAreMade.SeatNames(PricingCategory.Second);
-            Check.That(seatNames).ContainsExactly("A2", "A9", "A1", "A10", "B2", "B9");
+            Check.That(seatNames).ContainsExactly("A1-A2", "A9-A10", "B1-B2");
         }
 
         [Test]

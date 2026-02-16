@@ -12,23 +12,46 @@ data class Row private constructor(
     }
 
     fun suggestSeatingOption(partyRequested: Int, pricingCategory: PricingCategory): SeatingOption {
-        val selectedSeats = mutableListOf<SeatingPlace>()
         val rowSize = seatingPlaces.size
 
-        val availableSeatsCloserToCenter = seatingPlaces
+        val availableSeats = seatingPlaces
             .filter { it.isAvailable() }
             .filter { it.matchCategory(pricingCategory) }
-            .sortedBy { DistanceFromRowCenter.of(it.number, rowSize) }
 
-        for (seat in availableSeatsCloserToCenter) {
-            selectedSeats.add(seat)
-
-            if (selectedSeats.size == partyRequested) {
-                return SeatingOptionIsSuggested(partyRequested, pricingCategory, selectedSeats.toList())
-            }
+        if (availableSeats.size < partyRequested) {
+            return SeatingOptionIsNotAvailable(partyRequested, pricingCategory)
         }
 
-        return SeatingOptionIsNotAvailable(partyRequested, pricingCategory)
+        // Find contiguous blocks of available seats
+        val contiguousBlocks = mutableListOf<List<SeatingPlace>>()
+        val currentBlock = mutableListOf(availableSeats[0])
+
+        for (i in 1 until availableSeats.size) {
+            if (availableSeats[i].number == availableSeats[i - 1].number + 1) {
+                currentBlock.add(availableSeats[i])
+            } else {
+                contiguousBlocks.add(currentBlock.toList())
+                currentBlock.clear()
+                currentBlock.add(availableSeats[i])
+            }
+        }
+        contiguousBlocks.add(currentBlock.toList())
+
+        // Find the best adjacent seating option
+        val bestAdjacentSeats = contiguousBlocks
+            .filter { it.size >= partyRequested }
+            .flatMap { block ->
+                (0..block.size - partyRequested).map { i ->
+                    AdjacentSeats.of(block.subList(i, i + partyRequested), rowSize)
+                }
+            }
+            .minOrNull()
+
+        return if (bestAdjacentSeats != null) {
+            SeatingOptionIsSuggested(partyRequested, pricingCategory, bestAdjacentSeats.seats)
+        } else {
+            SeatingOptionIsNotAvailable(partyRequested, pricingCategory)
+        }
     }
 
     fun allocate(seatsToAllocate: List<SeatingPlace>): Row {

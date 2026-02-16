@@ -30,7 +30,7 @@ public class SeatingArrangementRecommender {
 
     private static List<SuggestionIsMade> giveMeSuggestionsFor(
             AuditoriumSeatingArrangement auditoriumSeatingArrangement, int partyRequested, PricingCategory pricingCategory) {
-        var foundedSuggestions = new ArrayList<SuggestionIsMade>();
+        var foundSuggestions = new ArrayList<SuggestionIsMade>();
         var currentArrangement = auditoriumSeatingArrangement;
 
         for (int i = 0; i < NUMBER_OF_SUGGESTIONS; i++) {
@@ -38,10 +38,10 @@ public class SeatingArrangementRecommender {
 
             if (seatingOptionSuggested.matchExpectation()) {
                 currentArrangement = currentArrangement.allocate(seatingOptionSuggested.seats());
-                foundedSuggestions.add(new SuggestionIsMade(seatingOptionSuggested));
+                foundSuggestions.add(new SuggestionIsMade(seatingOptionSuggested));
             }
         }
 
-        return foundedSuggestions;
+        return foundSuggestions;
     }
 }

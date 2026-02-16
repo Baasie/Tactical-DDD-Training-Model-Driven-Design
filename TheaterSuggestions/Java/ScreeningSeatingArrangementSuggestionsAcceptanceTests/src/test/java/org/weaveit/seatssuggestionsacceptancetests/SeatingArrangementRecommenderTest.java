@@ -49,7 +49,7 @@ class SeatingArrangementRecommenderTest {
     }
 
     @Test
-    void suggest_two_seatingPlaces_when_Auditorium_contains_all_available_seatingPlaces() throws IOException {
+    void suggest_adjacent_seats_for_a_party_of_two() throws IOException {
         // Lincoln-17
         //
         //     1   2   3   4   5   6   7   8   9  10
@@ -63,7 +63,7 @@ class SeatingArrangementRecommenderTest {
         var seatingArrangementRecommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);
         var suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested);
 
-        assertThat(suggestionsAreMade.seatNames(PricingCategory.SECOND)).containsExactly("A2", "A9", "A1", "A10", "B2", "B9");
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.SECOND)).containsExactly("A1-A2", "A9-A10", "B1-B2");
     }
 
 

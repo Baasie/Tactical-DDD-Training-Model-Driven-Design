@@ -13,23 +13,57 @@ public record Row
 
     public SeatingOption SuggestSeatingOption(int partyRequested, PricingCategory pricingCategory)
     {
-        var selectedSeats = new List<SeatingPlace>();
         var rowSize = SeatingPlaces.Count;
 
-        var availableSeatsCloserToCenter = SeatingPlaces
+        var availableSeats = SeatingPlaces
             .Where(seat => seat.IsAvailable())
             .Where(seat => seat.MatchCategory(pricingCategory))
-            .OrderBy(seat => DistanceFromRowCenter.Of(seat.Number, rowSize))
             .ToList();
 
-        foreach (var seat in availableSeatsCloserToCenter)
+        if (availableSeats.Count < partyRequested)
         {
-            selectedSeats.Add(seat);
+            return new SeatingOptionIsNotAvailable(partyRequested, pricingCategory);
+        }
 
-            if (selectedSeats.Count == partyRequested)
+        // Find contiguous blocks of available seats
+        var contiguousBlocks = new List<List<SeatingPlace>>();
+        var currentBlock = new List<SeatingPlace> { availableSeats[0] };
+
+        for (var i = 1; i < availableSeats.Count; i++)
+        {
+            if (availableSeats[i].Number == availableSeats[i - 1].Number + 1)
             {
-                return new SeatingOptionIsSuggested(partyRequested, pricingCategory, selectedSeats);
+                currentBlock.Add(availableSeats[i]);
             }
+            else
+            {
+                contiguousBlocks.Add(new List<SeatingPlace>(currentBlock));
+                currentBlock.Clear();
+                currentBlock.Add(availableSeats[i]);
+            }
+        }
+        contiguousBlocks.Add(new List<SeatingPlace>(currentBlock));
+
+        // Find the best adjacent seating option
+        AdjacentSeats? bestAdjacentSeats = null;
+
+        foreach (var block in contiguousBlocks)
+        {
+            if (block.Count < partyRequested) continue;
+
+            for (var i = 0; i <= block.Count - partyRequested; i++)
+            {
+                var candidate = AdjacentSeats.Of(block.GetRange(i, partyRequested), rowSize);
+                if (bestAdjacentSeats == null || candidate.CompareTo(bestAdjacentSeats) < 0)
+                {
+                    bestAdjacentSeats = candidate;
+                }
+            }
+        }
+
+        if (bestAdjacentSeats != null)
+        {
+            return new SeatingOptionIsSuggested(partyRequested, pricingCategory, bestAdjacentSeats.Seats.ToList());
         }
 
         return new SeatingOptionIsNotAvailable(partyRequested, pricingCategory);
