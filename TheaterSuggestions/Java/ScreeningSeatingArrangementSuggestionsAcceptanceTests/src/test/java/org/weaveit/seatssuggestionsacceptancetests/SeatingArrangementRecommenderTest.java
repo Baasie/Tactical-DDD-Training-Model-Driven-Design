@@ -134,9 +134,9 @@ class SeatingArrangementRecommenderTest {
         var suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested);
 
         assertThat(suggestionsAreMade.seatNames(PricingCategory.FIRST)).isEmpty();
-        assertThat(suggestionsAreMade.seatNames(PricingCategory.SECOND)).containsExactly("C5-C6-C7-C8", "C1-C2-C3-C4", "D5-D6-D7-D8");
-        assertThat(suggestionsAreMade.seatNames(PricingCategory.THIRD)).containsExactly("E5-E6-E7-E8", "E1-E2-E3-E4", "F5-F6-F7-F8");
-        assertThat(suggestionsAreMade.seatNames(PricingCategory.MIXED)).containsExactly("A6-A7-A8-A9", "B1-B2-B3-B4", "C5-C6-C7-C8");
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.SECOND)).containsExactly("C4-C5-C6-C7", "D4-D5-D6-D7");
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.THIRD)).containsExactly("E4-E5-E6-E7", "F4-F5-F6-F7");
+        assertThat(suggestionsAreMade.seatNames(PricingCategory.MIXED)).containsExactly("A6-A7-A8-A9", "B1-B2-B3-B4", "C4-C5-C6-C7");
     }
 
     @Test

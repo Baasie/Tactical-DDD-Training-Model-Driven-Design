@@ -102,7 +102,7 @@ class RowTest {
      * Only [A5, A6, A7] has 3 adjacent seats -> that's the suggestion
      */
     @Test
-    public void Offer_adjacent_seats_nearer_the_middle_of_the_row_when_the_middle_is_not_reserved() {
+    public void offer_adjacent_seats_nearer_the_middle_of_the_row_when_the_middle_is_not_reserved() {
         int partySize = 3;
 
         SeatingPlace a1 = new SeatingPlace("A", 1, PricingCategory.SECOND, SeatingPlaceAvailability.AVAILABLE);
@@ -142,7 +142,7 @@ class RowTest {
      * Window [4,5,6] is closest to middle (center of window = seat 5, distance 1)
      */
     @Test
-    public void Offer_adjacent_seats_closest_to_the_middle_when_multiple_options_exist() {
+    public void offer_adjacent_seats_closest_to_the_middle_when_multiple_options_exist() {
         int partySize = 3;
 
         SeatingPlace a1 = new SeatingPlace("A", 1, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);

@@ -96,7 +96,7 @@ class RowTest {
      * Only [A5, A6, A7] has 3 adjacent seats -> that's the suggestion
      */
     @Test
-    fun `Offer adjacent seats nearer the middle of the row when the middle is not reserved`() {
+    fun `offer adjacent seats nearer the middle of the row when the middle is not reserved`() {
         val partySize = 3
 
         val a1 = SeatingPlace("A", 1, PricingCategory.SECOND, SeatingPlaceAvailability.AVAILABLE)
@@ -135,7 +135,7 @@ class RowTest {
      * Window [4,5,6] is closest to middle (center of window = seat 5, distance 1)
      */
     @Test
-    fun `Offer adjacent seats closest to the middle when multiple options exist`() {
+    fun `offer adjacent seats closest to the middle when multiple options exist`() {
         val partySize = 3
 
         val a1 = SeatingPlace("A", 1, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE)
