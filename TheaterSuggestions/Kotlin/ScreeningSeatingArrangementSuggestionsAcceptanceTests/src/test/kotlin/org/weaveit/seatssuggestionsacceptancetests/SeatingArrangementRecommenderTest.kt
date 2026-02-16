@@ -102,7 +102,7 @@ class SeatingArrangementRecommenderTest {
     }
 
     @Test
-    fun `should offer adjacent seats nearer the middle of a row`() {
+    fun `should offer seats nearer the middle of a row`() {
         // Mogador Auditorium-9
         //
         //    1   2   3   4   5   6   7   8   9  10
