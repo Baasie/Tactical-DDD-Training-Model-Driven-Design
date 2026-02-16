@@ -32,7 +32,7 @@ class RowTest {
      * For party of 2: A5, A6 (the two seats closest to middle)
      */
     @Test
-    public void should_offer_seats_starting_from_middle_of_row() {
+    public void should_offer_seats_starting_from_middle_of_row_even() {
         int partySize = 2;
 
         // Row with 10 seats - middle is between seat 5 and 6
@@ -56,6 +56,34 @@ class RowTest {
 
         // A5 and A6 are the two seats closest to the middle (between 5 and 6)
         assertThat(seatingPlaces).containsExactly(a5, a6);
+    }
+
+    @Test
+    public void should_offer_seats_starting_from_middle_of_row_eneven() {
+        int partySize = 2;
+
+        // Row with 10 seats - middle is between seat 5 and 6
+        SeatingPlace a1 = new SeatingPlace("A", 1, PricingCategory.SECOND, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a2 = new SeatingPlace("A", 2, PricingCategory.SECOND, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a3 = new SeatingPlace("A", 3, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a4 = new SeatingPlace("A", 4, PricingCategory.FIRST, SeatingPlaceAvailability.RESERVED);
+        SeatingPlace a5 = new SeatingPlace("A", 5, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a6 = new SeatingPlace("A", 6, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a7 = new SeatingPlace("A", 7, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a8 = new SeatingPlace("A", 8, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a9 = new SeatingPlace("A", 9, PricingCategory.FIRST, SeatingPlaceAvailability.RESERVED);
+        SeatingPlace a10 = new SeatingPlace("A", 10, PricingCategory.SECOND, SeatingPlaceAvailability.AVAILABLE);
+        SeatingPlace a11 = new SeatingPlace("A", 11, PricingCategory.SECOND, SeatingPlaceAvailability.AVAILABLE);
+
+        Row row = new Row("A", Arrays.asList(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11));
+
+        // Get seats ordered by distance from middle, then take first 'partySize' seats
+        List<SeatingPlace> seatingPlaces = offerSeatsNearerTheMiddleOfTheRow(row).stream()
+                .limit(partySize)
+                .collect(Collectors.toList());
+
+        // A5 and A6 are the two seats closest to the middle (between 5 and 6)
+        assertThat(seatingPlaces).containsExactly(a6, a5);
     }
 
     /**

@@ -28,7 +28,7 @@ public class RowTest
     /// For party of 2: A5, A6 (the two seats closest to middle)
     /// </summary>
     [Test]
-    public void Should_offer_seats_starting_from_middle_of_row()
+    public void Should_offer_seats_starting_from_middle_of_row_even()
     {
         var partySize = 2;
 
@@ -51,6 +51,33 @@ public class RowTest
 
         // A5 and A6 are the two seats closest to the middle (between 5 and 6)
         Check.That(seatingPlaces).ContainsExactly(a5, a6);
+    }
+
+    [Test]
+    public void Should_offer_seats_starting_from_middle_of_row_eneven()
+    {
+        var partySize = 2;
+
+        // Row with 11 seats - middle is seat 6
+        var a1 = new SeatingPlace("A", 1, PricingCategory.Second, SeatingPlaceAvailability.Available);
+        var a2 = new SeatingPlace("A", 2, PricingCategory.Second, SeatingPlaceAvailability.Available);
+        var a3 = new SeatingPlace("A", 3, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a4 = new SeatingPlace("A", 4, PricingCategory.First, SeatingPlaceAvailability.Reserved);
+        var a5 = new SeatingPlace("A", 5, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a6 = new SeatingPlace("A", 6, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a7 = new SeatingPlace("A", 7, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a8 = new SeatingPlace("A", 8, PricingCategory.First, SeatingPlaceAvailability.Available);
+        var a9 = new SeatingPlace("A", 9, PricingCategory.First, SeatingPlaceAvailability.Reserved);
+        var a10 = new SeatingPlace("A", 10, PricingCategory.Second, SeatingPlaceAvailability.Available);
+        var a11 = new SeatingPlace("A", 11, PricingCategory.Second, SeatingPlaceAvailability.Available);
+
+        var row = new Row("A", new List<SeatingPlace> { a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11 });
+
+        // Get seats ordered by distance from middle, then take first 'partySize' seats
+        var seatingPlaces = OfferSeatsNearerTheMiddleOfTheRow(row).Take(partySize).ToList();
+
+        // A6 is the exact middle seat (seat 6 of 11), A5 is next closest
+        Check.That(seatingPlaces).ContainsExactly(a6, a5);
     }
 
     /// <summary>
