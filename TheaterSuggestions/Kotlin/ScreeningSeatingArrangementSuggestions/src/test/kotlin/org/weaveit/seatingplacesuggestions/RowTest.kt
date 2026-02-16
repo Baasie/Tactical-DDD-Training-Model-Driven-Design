@@ -96,7 +96,7 @@ class RowTest {
      * Only [A5, A6, A7] has 3 adjacent seats -> that's the suggestion
      */
     @Test
-    fun `Offer adjacent seats nearer the middle of the row when the middle is not reserved`() {
+    fun `offer adjacent seats nearer the middle of the row when the middle is not reserved`() {
         val partySize = 3
 
         val a1 = SeatingPlace("A", 1, PricingCategory.SECOND, SeatingPlaceAvailability.AVAILABLE)
@@ -135,7 +135,7 @@ class RowTest {
      * Window [4,5,6] is closest to middle (center of window = seat 5, distance 1)
      */
     @Test
-    fun `Offer adjacent seats closest to the middle when multiple options exist`() {
+    fun `offer adjacent seats closest to the middle when multiple options exist`() {
         val partySize = 3
 
         val a1 = SeatingPlace("A", 1, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE)
@@ -163,8 +163,44 @@ class RowTest {
 
     // Deep Modeling: probing the code should start with a prototype.
     private fun offerAdjacentSeats(availableSeatsInCategory: List<SeatingPlace>, partySize: Int, rowSize: Int): List<SeatingPlace> {
-        // Implement your prototype here
-        return emptyList()
+        if (availableSeatsInCategory.size < partySize) return emptyList()
+
+        // Find contiguous blocks of seats (consecutive seat numbers)
+        val contiguousBlocks = mutableListOf<List<SeatingPlace>>()
+        val currentBlock = mutableListOf(availableSeatsInCategory[0])
+
+        for (i in 1 until availableSeatsInCategory.size) {
+            if (availableSeatsInCategory[i].number == availableSeatsInCategory[i - 1].number + 1) {
+                currentBlock.add(availableSeatsInCategory[i])
+            } else {
+                contiguousBlocks.add(currentBlock.toList())
+                currentBlock.clear()
+                currentBlock.add(availableSeatsInCategory[i])
+            }
+        }
+        contiguousBlocks.add(currentBlock.toList())
+
+        // Find the window of partySize closest to the center of the row
+        val rowCenter = (rowSize + 1) / 2.0
+        var bestWindow: List<SeatingPlace> = emptyList()
+        var bestDistance = Double.MAX_VALUE
+
+        for (block in contiguousBlocks) {
+            if (block.size < partySize) continue
+
+            for (i in 0..block.size - partySize) {
+                val window = block.subList(i, i + partySize)
+                val windowCenter = (window.first().number + window.last().number) / 2.0
+                val distance = kotlin.math.abs(windowCenter - rowCenter)
+
+                if (distance < bestDistance) {
+                    bestDistance = distance
+                    bestWindow = window.toList()
+                }
+            }
+        }
+
+        return bestWindow
     }
 
     @Nested

@@ -102,7 +102,7 @@ class RowTest {
      * Only [A5, A6, A7] has 3 adjacent seats -> that's the suggestion
      */
     @Test
-    public void Offer_adjacent_seats_nearer_the_middle_of_the_row_when_the_middle_is_not_reserved() {
+    public void offer_adjacent_seats_nearer_the_middle_of_the_row_when_the_middle_is_not_reserved() {
         int partySize = 3;
 
         SeatingPlace a1 = new SeatingPlace("A", 1, PricingCategory.SECOND, SeatingPlaceAvailability.AVAILABLE);
@@ -142,7 +142,7 @@ class RowTest {
      * Window [4,5,6] is closest to middle (center of window = seat 5, distance 1)
      */
     @Test
-    public void Offer_adjacent_seats_closest_to_the_middle_when_multiple_options_exist() {
+    public void offer_adjacent_seats_closest_to_the_middle_when_multiple_options_exist() {
         int partySize = 3;
 
         SeatingPlace a1 = new SeatingPlace("A", 1, PricingCategory.FIRST, SeatingPlaceAvailability.AVAILABLE);
@@ -171,8 +171,47 @@ class RowTest {
 
     // Deep Modeling: probing the code should start with a prototype.
     private List<SeatingPlace> offerAdjacentSeats(List<SeatingPlace> availableSeatsInCategory, int partySize, int rowSize) {
-        // Implement your prototype here
-        return new ArrayList<>();
+        if (availableSeatsInCategory.size() < partySize) {
+            return new ArrayList<>();
+        }
+
+        // Find contiguous blocks of seats (consecutive seat numbers)
+        List<List<SeatingPlace>> contiguousBlocks = new ArrayList<>();
+        List<SeatingPlace> currentBlock = new ArrayList<>();
+        currentBlock.add(availableSeatsInCategory.get(0));
+
+        for (int i = 1; i < availableSeatsInCategory.size(); i++) {
+            if (availableSeatsInCategory.get(i).number() == availableSeatsInCategory.get(i - 1).number() + 1) {
+                currentBlock.add(availableSeatsInCategory.get(i));
+            } else {
+                contiguousBlocks.add(currentBlock);
+                currentBlock = new ArrayList<>();
+                currentBlock.add(availableSeatsInCategory.get(i));
+            }
+        }
+        contiguousBlocks.add(currentBlock);
+
+        // Find the window of partySize closest to the center of the row
+        double rowCenter = (rowSize + 1) / 2.0;
+        List<SeatingPlace> bestWindow = null;
+        double bestDistance = Double.MAX_VALUE;
+
+        for (List<SeatingPlace> block : contiguousBlocks) {
+            if (block.size() < partySize) continue;
+
+            for (int i = 0; i <= block.size() - partySize; i++) {
+                List<SeatingPlace> window = block.subList(i, i + partySize);
+                double windowCenter = (window.get(0).number() + window.get(window.size() - 1).number()) / 2.0;
+                double distance = Math.abs(windowCenter - rowCenter);
+
+                if (distance < bestDistance) {
+                    bestDistance = distance;
+                    bestWindow = new ArrayList<>(window);
+                }
+            }
+        }
+
+        return bestWindow != null ? bestWindow : new ArrayList<>();
     }
 
     @Nested

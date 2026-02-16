@@ -429,3 +429,57 @@ You may use AI to help implement the prototype algorithm. Consider:
 - Discuss how contiguous seat selection differs from individual seat selection
 - Use AI to help trace through the Dock Street auditorium data to verify your algorithm
 - When integrating, discuss with AI where the adjacent logic should live in the domain model
+
+---
+
+## Lab 4: Green Test — Prototype Algorithm Works
+
+This branch represents the "green" step for the adjacent seating prototype. The standalone `offerAdjacentSeats()` method passes its unit tests, but the domain model hasn't been updated yet — the acceptance tests still fail.
+
+### What Changed From Begin
+
+The `offerAdjacentSeats()` prototype method is now implemented in all 3 languages:
+
+1. Find contiguous blocks of available seats (consecutive seat numbers)
+2. For each block large enough, slide a window of `partySize` across it
+3. For each window, calculate its center and distance from the row center
+4. Select the window with the smallest distance (ties broken by lower seat number)
+
+The row center formula matches Lab 3: `(rowSize + 1) / 2.0`
+
+### Current State
+
+- **Unit tests**: Green — the prototype correctly finds the best contiguous window for both the single-block and multi-block scenarios
+- **Acceptance tests**: Still red — the domain model hasn't been updated to use this algorithm
+
+### Overlapping Suggestions — A Design Discussion
+
+When tracing the party=4 acceptance test expectations, you'll notice something interesting: **the best window (e.g., seats 4-5-6-7) sits in the exact middle of a 10-seat row, splitting the remaining seats into two blocks of 3 (seats 1-2-3 and 8-9-10).** Neither block is large enough for another group of 4.
+
+This means:
+- For SECOND category (rows C and D): only **2 suggestions** are possible per row, for a total of 2 across both rows
+- For THIRD category (rows E and F): same situation — only **2 suggestions** total
+
+Compare this with party=3, where the best window (4-5-6) leaves blocks of 3 (seats 1-2-3) and 4 (seats 7-8-9-10) — both large enough for another group of 3. So party=3 gets the full 3 suggestions per category.
+
+This is a natural consequence of the "pick the most centered window first" algorithm combined with allocation. It's worth discussing:
+- Is 2 suggestions acceptable, or should the algorithm try to maximize the number of suggestions?
+- Would a domain expert prefer the most centered window, or would they prefer to spread groups more evenly across the row?
+- What happens with even larger party sizes relative to row size?
+
+### What to Review
+
+Before integrating into the domain model, notice:
+- The sliding window algorithm is fundamentally different from Lab 3's individual seat selection — it operates on contiguous groups, not individual seats
+- The prototype's center calculation `(rowSize + 1) / 2.0` is consistent with `DistanceFromRowCenter` from Lab 3
+- The tiebreaker (lower first seat number) means windows to the left of center are preferred when two windows are equidistant
+
+### Next Step: Integrate Into the Domain Model
+
+The prototype works. Now the real design questions:
+
+1. **How does `offerAdjacentSeats()` relate to `suggestSeatingOption()`?** Should Row have two methods, or should the existing method handle both cases?
+
+2. **Output format**: The acceptance tests expect hyphenated seat names (e.g., `"A5-A6-A7"`) for groups. Currently `SuggestionIsMade.seatNames()` returns individual names. What needs to change?
+
+3. **Breaking changes**: When you integrate adjacent seating, the Lincoln-17 (party=2) acceptance test will break — it currently expects individual seat names, but the adjacent algorithm will return grouped names. Think about why and how to fix the expectations.

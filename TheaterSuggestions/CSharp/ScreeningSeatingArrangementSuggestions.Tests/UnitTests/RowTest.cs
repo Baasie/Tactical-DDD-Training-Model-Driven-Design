@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NFluent;
@@ -173,8 +174,51 @@ public class RowTest
     // Deep Modeling: probing the code should start with a prototype.
     private List<SeatingPlace> OfferAdjacentSeats(List<SeatingPlace> availableSeatsInCategory, int partySize, int rowSize)
     {
-        // Implement your prototype here
-        return new List<SeatingPlace>();
+        if (availableSeatsInCategory.Count < partySize)
+            return new List<SeatingPlace>();
+
+        // Find contiguous blocks of seats (consecutive seat numbers)
+        var contiguousBlocks = new List<List<SeatingPlace>>();
+        var currentBlock = new List<SeatingPlace> { availableSeatsInCategory[0] };
+
+        for (var i = 1; i < availableSeatsInCategory.Count; i++)
+        {
+            if (availableSeatsInCategory[i].Number == availableSeatsInCategory[i - 1].Number + 1)
+            {
+                currentBlock.Add(availableSeatsInCategory[i]);
+            }
+            else
+            {
+                contiguousBlocks.Add(currentBlock);
+                currentBlock = new List<SeatingPlace> { availableSeatsInCategory[i] };
+            }
+        }
+        contiguousBlocks.Add(currentBlock);
+
+        // Find the window of partySize closest to the center of the row
+        var rowCenter = (rowSize + 1) / 2.0;
+        List<SeatingPlace> bestWindow = null;
+        var bestDistance = double.MaxValue;
+
+        foreach (var block in contiguousBlocks)
+        {
+            if (block.Count < partySize) continue;
+
+            for (var i = 0; i <= block.Count - partySize; i++)
+            {
+                var window = block.GetRange(i, partySize);
+                var windowCenter = (window[0].Number + window[^1].Number) / 2.0;
+                var distance = Math.Abs(windowCenter - rowCenter);
+
+                if (distance < bestDistance)
+                {
+                    bestDistance = distance;
+                    bestWindow = window;
+                }
+            }
+        }
+
+        return bestWindow ?? new List<SeatingPlace>();
     }
 
     [TestFixture]
