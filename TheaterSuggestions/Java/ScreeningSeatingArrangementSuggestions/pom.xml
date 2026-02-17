@@ -15,12 +15,6 @@
     <name>SeatingPlaceSuggestions</name>
 
     <dependencies>
-        <dependency>
-            <groupId>org.weaveit</groupId>
-            <artifactId>ExternalDependencies</artifactId>
-        </dependency>
-
-
         <!-- TEST dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

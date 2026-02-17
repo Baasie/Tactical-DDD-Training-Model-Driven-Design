@@ -5,6 +5,7 @@ plugins {
 dependencies {
     implementation(project(":ExternalDependencies"))
     implementation(project(":ScreeningSeatingArrangementSuggestions"))
+    implementation(project(":ScreeningSeatingArrangementSuggestionsApi"))
 
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter:6.0.2")

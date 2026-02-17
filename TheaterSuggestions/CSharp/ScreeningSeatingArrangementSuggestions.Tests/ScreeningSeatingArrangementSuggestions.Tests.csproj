@@ -70,6 +70,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ExternalDependencies\ExternalDependencies.csproj" />
     <ProjectReference Include="..\ScreeningSeatingArrangementSuggestions\ScreeningSeatingArrangementSuggestions.csproj" />
+    <ProjectReference Include="..\ScreeningSeatingArrangementSuggestions.Api\ScreeningSeatingArrangementSuggestions.Api.csproj" />
   </ItemGroup>
 
   <ItemGroup>

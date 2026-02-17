@@ -3,6 +3,7 @@ package org.weaveit.seatssuggestionsacceptancetests
 import org.weaveit.externaldependencies.auditoriumlayoutrepository.AuditoriumLayoutRepository
 import org.weaveit.externaldependencies.reservationsprovider.ReservationsProvider
 import org.weaveit.seatingplacesuggestions.*
+import org.weaveit.seatingplacesuggestions.api.FileBasedAuditoriumSeatingArrangements
 import org.junit.jupiter.api.Test
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.assertEquals
@@ -22,7 +23,7 @@ class SeatingArrangementRecommenderTest {
         val showId = "1"
         val partyRequested = 1
 
-        val auditoriumSeatingArrangements = AuditoriumSeatingArrangements(
+        val auditoriumSeatingArrangements = FileBasedAuditoriumSeatingArrangements(
             AuditoriumLayoutRepository(),
             ReservationsProvider()
         )
@@ -41,7 +42,7 @@ class SeatingArrangementRecommenderTest {
         val showId = "5"
         val partyRequested = 1
 
-        val auditoriumSeatingArrangements = AuditoriumSeatingArrangements(
+        val auditoriumSeatingArrangements = FileBasedAuditoriumSeatingArrangements(
             AuditoriumLayoutRepository(),
             ReservationsProvider()
         )
@@ -63,7 +64,7 @@ class SeatingArrangementRecommenderTest {
         val showId = "17"
         val partyRequested = 2
 
-        val auditoriumSeatingArrangements = AuditoriumSeatingArrangements(
+        val auditoriumSeatingArrangements = FileBasedAuditoriumSeatingArrangements(
             AuditoriumLayoutRepository(),
             ReservationsProvider()
         )
@@ -87,7 +88,7 @@ class SeatingArrangementRecommenderTest {
         val showId = "18"
         val partyRequested = 1
 
-        val auditoriumSeatingArrangements = AuditoriumSeatingArrangements(
+        val auditoriumSeatingArrangements = FileBasedAuditoriumSeatingArrangements(
             AuditoriumLayoutRepository(),
             ReservationsProvider()
         )
@@ -114,7 +115,7 @@ class SeatingArrangementRecommenderTest {
         val showId = "9"
         val partyRequested = 1
 
-        val auditoriumSeatingArrangements = AuditoriumSeatingArrangements(
+        val auditoriumSeatingArrangements = FileBasedAuditoriumSeatingArrangements(
             AuditoriumLayoutRepository(),
             ReservationsProvider()
         )
@@ -139,7 +140,7 @@ class SeatingArrangementRecommenderTest {
         val showId = "3"
         val partyRequested = 4
 
-        val auditoriumSeatingArrangements = AuditoriumSeatingArrangements(
+        val auditoriumSeatingArrangements = FileBasedAuditoriumSeatingArrangements(
             AuditoriumLayoutRepository(),
             ReservationsProvider()
         )
@@ -166,7 +167,7 @@ class SeatingArrangementRecommenderTest {
         val showId = "3"
         val partyRequested = 3
 
-        val auditoriumSeatingArrangements = AuditoriumSeatingArrangements(
+        val auditoriumSeatingArrangements = FileBasedAuditoriumSeatingArrangements(
             AuditoriumLayoutRepository(),
             ReservationsProvider()
         )

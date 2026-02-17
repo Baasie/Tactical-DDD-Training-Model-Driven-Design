@@ -13,6 +13,12 @@ import org.weaveit.externaldependencies.reservationsprovider.ReservationsProvide
 import org.weaveit.seatingplacesuggestions.*
 
 fun main() {
+    val auditoriumSeatingArrangements: AuditoriumSeatingArrangements = FileBasedAuditoriumSeatingArrangements(
+        AuditoriumLayoutRepository(),
+        ReservationsProvider()
+    )
+    val recommender = SeatingArrangementRecommender(auditoriumSeatingArrangements)
+
     embeddedServer(Netty, port = 8080) {
         install(ContentNegotiation) {
             jackson()
@@ -27,12 +33,6 @@ fun main() {
                     return@get
                 }
 
-                val auditoriumSeatingArrangements = AuditoriumSeatingArrangements(
-                    AuditoriumLayoutRepository(),
-                    ReservationsProvider()
-                )
-
-                val recommender = SeatingArrangementRecommender(auditoriumSeatingArrangements)
                 val suggestions = recommender.makeSuggestions(showId, partySize)
 
                 call.respond(toResponse(suggestions))

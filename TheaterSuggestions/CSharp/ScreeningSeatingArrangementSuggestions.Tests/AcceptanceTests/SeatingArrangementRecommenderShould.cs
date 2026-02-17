@@ -2,6 +2,7 @@ using ExternalDependencies.AuditoriumLayoutRepository;
 using ExternalDependencies.ReservationsProvider;
 using NFluent;
 using NUnit.Framework;
+using ScreeningSeatingArrangementSuggestions.Api;
 using SeatsSuggestions;
 
 namespace SeatsSuggestions.Tests.AcceptanceTests

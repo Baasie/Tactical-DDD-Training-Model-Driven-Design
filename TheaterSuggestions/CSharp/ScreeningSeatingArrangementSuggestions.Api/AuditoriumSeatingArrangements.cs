@@ -1,9 +1,10 @@
 using ExternalDependencies.AuditoriumLayoutRepository;
 using ExternalDependencies.ReservationsProvider;
+using SeatsSuggestions;
 
-namespace SeatsSuggestions;
+namespace ScreeningSeatingArrangementSuggestions.Api;
 
-public class AuditoriumSeatingArrangements
+public class AuditoriumSeatingArrangements : IAuditoriumSeatingArrangements
 {
     private readonly ReservationsProvider _reservedSeatsRepository;
     private readonly AuditoriumLayoutRepository _auditoriumLayoutRepository;

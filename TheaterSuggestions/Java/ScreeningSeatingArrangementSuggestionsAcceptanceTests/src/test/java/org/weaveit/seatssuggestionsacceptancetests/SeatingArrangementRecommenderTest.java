@@ -3,6 +3,7 @@ package org.weaveit.seatssuggestionsacceptancetests;
 import org.weaveit.externaldependencies.auditoriumlayoutrepository.AuditoriumLayoutRepository;
 import org.weaveit.externaldependencies.reservationsprovider.ReservationsProvider;
 import org.weaveit.seatingplacesuggestions.*;
+import org.weaveit.seatingplacesuggestions.api.FileBasedAuditoriumSeatingArrangements;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -22,7 +23,7 @@ class SeatingArrangementRecommenderTest {
         final int partyRequested = 1;
 
         var auditoriumSeatingArrangements =
-                new AuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
+                new FileBasedAuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
         var seatingArrangementRecommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);
         var suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested);
 
@@ -39,7 +40,7 @@ class SeatingArrangementRecommenderTest {
         final int partyRequested = 1;
 
         var auditoriumSeatingArrangements =
-                new AuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
+                new FileBasedAuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
         var seatingArrangementRecommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);
         var suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested);
 
@@ -59,7 +60,7 @@ class SeatingArrangementRecommenderTest {
         final int partyRequested = 2;
 
         var auditoriumSeatingArrangements =
-                new AuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
+                new FileBasedAuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
         var seatingArrangementRecommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);
         var suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested);
 
@@ -81,7 +82,7 @@ class SeatingArrangementRecommenderTest {
         final int partyRequested = 1;
 
         var auditoriumSeatingArrangements =
-                new AuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
+                new FileBasedAuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
         var seatingArrangementRecommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);
         var suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested);
 
@@ -106,7 +107,7 @@ class SeatingArrangementRecommenderTest {
         final int partyRequested = 1;
 
         var auditoriumSeatingArrangements =
-                new AuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
+                new FileBasedAuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
         var seatingArrangementRecommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);
         var suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested);
 
@@ -129,7 +130,7 @@ class SeatingArrangementRecommenderTest {
         final int partyRequested = 4;
 
         var auditoriumSeatingArrangements =
-                new AuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
+                new FileBasedAuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
         var seatingArrangementRecommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);
         var suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested);
 
@@ -154,7 +155,7 @@ class SeatingArrangementRecommenderTest {
         final int partyRequested = 3;
 
         var auditoriumSeatingArrangements =
-                new AuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
+                new FileBasedAuditoriumSeatingArrangements(new AuditoriumLayoutRepository(), new ReservationsProvider());
         var seatingArrangementRecommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);
         var suggestionsAreMade = seatingArrangementRecommender.makeSuggestions(showId, partyRequested);
 

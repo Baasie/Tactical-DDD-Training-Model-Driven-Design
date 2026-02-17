@@ -3,9 +3,9 @@ namespace SeatsSuggestions;
 public class SeatingArrangementRecommender
 {
     private const int NumberOfSuggestions = 3;
-    private readonly AuditoriumSeatingArrangements _auditoriumSeatingArrangements;
+    private readonly IAuditoriumSeatingArrangements _auditoriumSeatingArrangements;
 
-    public SeatingArrangementRecommender(AuditoriumSeatingArrangements auditoriumSeatingArrangements)
+    public SeatingArrangementRecommender(IAuditoriumSeatingArrangements auditoriumSeatingArrangements)
     {
         _auditoriumSeatingArrangements = auditoriumSeatingArrangements;
     }

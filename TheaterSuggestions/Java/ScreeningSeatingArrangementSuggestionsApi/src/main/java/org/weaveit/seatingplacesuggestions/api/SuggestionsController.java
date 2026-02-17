@@ -3,8 +3,6 @@ package org.weaveit.seatingplacesuggestions.api;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.weaveit.externaldependencies.auditoriumlayoutrepository.AuditoriumLayoutRepository;
-import org.weaveit.externaldependencies.reservationsprovider.ReservationsProvider;
 import org.weaveit.seatingplacesuggestions.*;
 
 import java.io.IOException;
@@ -15,17 +13,17 @@ import java.util.Map;
 @RestController
 public class SuggestionsController {
 
+    private final SeatingArrangementRecommender recommender;
+
+    public SuggestionsController(SeatingArrangementRecommender recommender) {
+        this.recommender = recommender;
+    }
+
     @GetMapping("/api/suggestions")
     public Map<String, Object> getSuggestions(
             @RequestParam String showId,
             @RequestParam int partySize) throws IOException {
 
-        var auditoriumSeatingArrangements = new AuditoriumSeatingArrangements(
-                new AuditoriumLayoutRepository(),
-                new ReservationsProvider()
-        );
-
-        var recommender = new SeatingArrangementRecommender(auditoriumSeatingArrangements);
         var suggestions = recommender.makeSuggestions(showId, partySize);
 
         return toResponse(suggestions);

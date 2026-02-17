@@ -8,8 +8,5 @@
         <RootNamespace>SeatsSuggestions</RootNamespace>
     </PropertyGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\ExternalDependencies\ExternalDependencies.csproj"/>
-    </ItemGroup>
 
 </Project>
